@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSL Checker — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <div><h1>Network Tools</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>SSL Checker</h2>
+  <p class="desc">View SSL certificate details for a domain.</p>
+
+  <div class="placeholder-box">
+    <strong>Coming soon — needs a small backend.</strong><br><br>
+    Reading a certificate's full details (issuer, expiry, chain) requires an actual TLS handshake, which browsers don't expose to JavaScript. Services like SSL Labs solve this with their own servers.<br><br>
+    This can be added later with a small serverless function that performs the check and returns the result as JSON to this page.
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>Network Tools</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+</body>
+</html>

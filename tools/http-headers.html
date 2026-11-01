@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTTP Headers — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <div><h1>Network Tools</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>HTTP Headers</h2>
+  <p class="desc">View the response headers a website sends back. Browser security (CORS) limits what headers JavaScript is allowed to read from a different domain, so results can be partial unless the site opts in.</p>
+
+  <div class="tool-box">
+    <div class="field">
+      <label for="urlInput">URL</label>
+      <input type="text" id="urlInput" placeholder="e.g. https://example.com" value="https://example.com">
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="checkBtn">Check Headers</button>
+    </div>
+    <div class="result" id="result" style="display:none;"></div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="note-box">
+    Only a small set of "safe" headers (like <code>content-type</code>) are visible to JavaScript across domains unless the target site sends an <code>Access-Control-Expose-Headers</code> header. For a complete header dump on any site, you'd normally run this check from a small backend instead of a browser — that can be added later without changing the rest of this site.
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>Network Tools</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+
+<script>
+document.getElementById('checkBtn').addEventListener('click', async () => {
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+  errorEl.textContent = '';
+  resultEl.style.display = 'none';
+
+  let url = document.getElementById('urlInput').value.trim();
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+
+  try {
+    const res = await fetch(url);
+    let html = '';
+    let count = 0;
+    res.headers.forEach((value, key) => {
+      html += `<div class="result-row"><span class="k">${key}</span><span class="v">${value}</span></div>`;
+      count++;
+    });
+    if (count === 0){
+      html = `<div class="result-row"><span class="k">Result</span><span class="v">No headers exposed to the browser by this site</span></div>`;
+    }
+    resultEl.innerHTML = html;
+    resultEl.style.display = 'block';
+  } catch (err) {
+    errorEl.textContent = 'The site blocked this cross-origin request (CORS). This is common and expected for many sites.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Check Headers';
+  }
+});
+</script>
+</body>
+</html>

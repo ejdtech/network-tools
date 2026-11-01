@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wi-Fi Analyzer — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <div><h1>Network Tools</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>Wi-Fi Analyzer</h2>
+  <p class="desc">Check your wireless network information and signal strength.</p>
+
+  <div id="connInfo" class="tool-box" style="margin-bottom:20px;"></div>
+
+  <div class="placeholder-box">
+    <strong>Full signal-strength scanning isn't possible from a browser.</strong><br><br>
+    For privacy reasons, browsers don't give websites access to nearby Wi-Fi networks or signal strength (dBm) — that information is only available to native apps with OS-level permission. Above is the general connection info the browser <em>is</em> allowed to share.
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>Network Tools</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+
+<script>
+const el = document.getElementById('connInfo');
+function row(k, v){
+  return `<div class="result-row"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+}
+const conn = navigator.connection || navigator.webkitConnection || navigator.mozConnection;
+if (conn){
+  let html = '';
+  html += row('Connection Type', conn.effectiveType || 'unknown');
+  if (conn.downlink !== undefined) html += row('Downlink (est.)', conn.downlink + ' Mbps');
+  if (conn.rtt !== undefined) html += row('Round-trip time (est.)', conn.rtt + ' ms');
+  if (conn.saveData !== undefined) html += row('Data Saver', conn.saveData ? 'On' : 'Off');
+  el.innerHTML = html;
+} else {
+  el.innerHTML = `<div class="result-row"><span class="k">Connection Info</span><span class="v">Not supported in this browser</span></div>`;
+}
+</script>
+</body>
+</html>

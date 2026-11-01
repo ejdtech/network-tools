@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IP Calculator — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <div><h1>Network Tools</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>IP Calculator</h2>
+  <p class="desc">Convert an IPv4 address into binary, hexadecimal and decimal (32-bit integer) form. Runs entirely in your browser.</p>
+
+  <div class="tool-box">
+    <div class="field">
+      <label for="ipInput">IP Address</label>
+      <input type="text" id="ipInput" placeholder="e.g. 192.168.1.10" value="192.168.1.10">
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="calcBtn">Convert</button>
+    </div>
+    <div class="result" id="result" style="display:none;"></div>
+    <div class="error" id="error"></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>Network Tools</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+
+<script>
+function row(k, v){
+  return `<div class="result-row"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+}
+
+document.getElementById('calcBtn').addEventListener('click', () => {
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+  errorEl.textContent = '';
+  resultEl.style.display = 'none';
+
+  const ip = document.getElementById('ipInput').value.trim();
+  const parts = ip.split('.');
+  if (parts.length !== 4 || parts.some(p => !/^\d+$/.test(p) || parseInt(p,10) > 255)){
+    errorEl.textContent = 'Please enter a valid IPv4 address, e.g. 192.168.1.10';
+    return;
+  }
+  const octets = parts.map(p => parseInt(p, 10));
+  const intVal = ((octets[0]<<24) | (octets[1]<<16) | (octets[2]<<8) | octets[3]) >>> 0;
+  const binary = octets.map(o => o.toString(2).padStart(8,'0')).join('.');
+  const hex = '0x' + octets.map(o => o.toString(16).padStart(2,'0')).join('').toUpperCase();
+  const classMap = o0 => {
+    if (o0 < 128) return 'A';
+    if (o0 < 192) return 'B';
+    if (o0 < 224) return 'C';
+    if (o0 < 240) return 'D (Multicast)';
+    return 'E (Reserved)';
+  };
+  const isPrivate = (
+    octets[0] === 10 ||
+    (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31) ||
+    (octets[0] === 192 && octets[1] === 168)
+  );
+
+  let html = '';
+  html += row('Dotted Decimal', ip);
+  html += row('Binary', binary);
+  html += row('Hexadecimal', hex);
+  html += row('32-bit Integer', intVal.toLocaleString());
+  html += row('Address Class', classMap(octets[0]));
+  html += row('Private / Public', isPrivate ? 'Private (RFC 1918)' : 'Public');
+
+  resultEl.innerHTML = html;
+  resultEl.style.display = 'block';
+});
+</script>
+</body>
+</html>

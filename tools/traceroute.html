@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Traceroute — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <div><h1>Network Tools</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>Traceroute</h2>
+  <p class="desc">See the path your packets take to a destination.</p>
+
+  <div class="placeholder-box">
+    <strong>Coming soon — needs a small backend.</strong><br><br>
+    Real traceroute sends raw ICMP/UDP packets with increasing TTL values. Web browsers are not allowed to do this for security reasons, so a purely static site (like this one on GitHub Pages) cannot run a real traceroute.<br><br>
+    To add this later, you'd deploy a tiny serverless function (e.g. a Cloudflare Worker or an AWS Lambda) that runs the traceroute on a real server and returns the result to this page as JSON — the rest of the site can stay exactly as it is.
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>Network Tools</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+</body>
+</html>

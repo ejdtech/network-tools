@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTTP Latency Check — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <div><h1>Network Tools</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>HTTP Latency Check</h2>
+  <p class="desc">Checks whether a web host responds and roughly how fast. This is <strong>not a real ICMP ping</strong> — browsers aren't allowed to send raw ICMP packets — it measures the round-trip time of an HTTPS request instead, which only works for web hosts (not arbitrary servers).</p>
+
+  <div class="tool-box">
+    <div class="field">
+      <label for="hostInput">URL</label>
+      <input type="text" id="hostInput" placeholder="e.g. https://example.com" value="https://example.com">
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="checkBtn">Check</button>
+    </div>
+    <div class="result" id="result" style="display:none;"></div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="note-box">
+    For true ICMP ping and traceroute, a static website isn't enough — that requires a small backend (see the <a href="traceroute.html">Traceroute</a> page for details).
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>Network Tools</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+
+<script>
+function row(k, v){
+  return `<div class="result-row"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+}
+
+document.getElementById('checkBtn').addEventListener('click', async () => {
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+  errorEl.textContent = '';
+  resultEl.style.display = 'none';
+
+  let url = document.getElementById('hostInput').value.trim();
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+
+  const samples = [];
+  let reachable = false;
+
+  for (let i = 0; i < 4; i++){
+    const start = performance.now();
+    try {
+      // no-cors mode: we can't read the response, but a resolved/rejected
+      // fetch still tells us whether the host answered and how long it took.
+      await fetch(url, { mode: 'no-cors', cache: 'no-store' });
+      reachable = true;
+      samples.push(performance.now() - start);
+    } catch (e) {
+      samples.push(null);
+    }
+  }
+
+  const valid = samples.filter(s => s !== null);
+  if (valid.length === 0){
+    errorEl.textContent = 'Host did not respond, or blocked the request (CORS/firewall). Try a different URL.';
+  } else {
+    const min = Math.min(...valid).toFixed(0);
+    const max = Math.max(...valid).toFixed(0);
+    const avg = (valid.reduce((a,b)=>a+b,0)/valid.length).toFixed(0);
+    const loss = (((4 - valid.length) / 4) * 100).toFixed(0);
+    let html = '';
+    html += row('Host', url);
+    html += row('Status', 'Reachable');
+    html += row('Requests Sent', '4');
+    html += row('Min / Avg / Max', `${min} ms / ${avg} ms / ${max} ms`);
+    html += row('Approx. Loss', `${loss}%`);
+    resultEl.innerHTML = html;
+    resultEl.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Check';
+});
+</script>
+</body>
+</html>

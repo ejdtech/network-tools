@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DNS Lookup — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <div><h1>Network Tools</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>DNS Lookup</h2>
+  <p class="desc">Look up DNS records for any domain. Uses Google's public DNS-over-HTTPS API directly from your browser.</p>
+
+  <div class="tool-box">
+    <div class="field">
+      <label for="domainInput">Domain</label>
+      <input type="text" id="domainInput" placeholder="e.g. example.com" value="example.com">
+    </div>
+    <div class="field">
+      <label for="typeInput">Record Type</label>
+      <select id="typeInput">
+        <option value="A">A</option>
+        <option value="AAAA">AAAA</option>
+        <option value="MX">MX</option>
+        <option value="TXT">TXT</option>
+        <option value="NS">NS</option>
+        <option value="CNAME">CNAME</option>
+        <option value="SOA">SOA</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="lookupBtn">Lookup</button>
+    </div>
+    <div class="result" id="result" style="display:none;"></div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="note-box">
+    Powered by <strong>dns.google/resolve</strong> — a free, public DNS-over-HTTPS endpoint. No data is stored by this site.
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>Network Tools</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+
+<script>
+document.getElementById('lookupBtn').addEventListener('click', async () => {
+  const errorEl = document.getElementById('error');
+  const resultEl = document.getElementById('result');
+  errorEl.textContent = '';
+  resultEl.style.display = 'none';
+
+  const domain = document.getElementById('domainInput').value.trim();
+  const type = document.getElementById('typeInput').value;
+  if (!domain){
+    errorEl.textContent = 'Please enter a domain name.';
+    return;
+  }
+
+  const btn = document.getElementById('lookupBtn');
+  btn.disabled = true;
+  btn.textContent = 'Looking up...';
+
+  try {
+    const res = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${type}`);
+    const data = await res.json();
+
+    if (!data.Answer || data.Answer.length === 0){
+      resultEl.innerHTML = `<div class="result-row"><span class="k">Result</span><span class="v">No ${type} records found</span></div>`;
+      resultEl.style.display = 'block';
+    } else {
+      let html = '';
+      data.Answer.forEach(rec => {
+        html += `<div class="result-row"><span class="k">${rec.name} (TTL ${rec.TTL}s)</span><span class="v">${rec.data}</span></div>`;
+      });
+      resultEl.innerHTML = html;
+      resultEl.style.display = 'block';
+    }
+  } catch (err) {
+    errorEl.textContent = 'Lookup failed. Check the domain name and your internet connection.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Lookup';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find My Public IP — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+    <div><h1>Network Tools</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>Find My Public IP</h2>
+  <p class="desc">Shows the public IP address your browser is connecting from, plus rough location info. Nothing is saved — the lookup happens directly between your browser and the public API.</p>
+
+  <div class="tool-box">
+    <div class="btn-row">
+      <button class="btn" id="lookupBtn">Find My IP</button>
+    </div>
+    <div class="result" id="result" style="display:none;"></div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div class="note-box">
+    This tool calls two free public APIs directly from your browser: <strong>api.ipify.org</strong> (for the IP address) and <strong>ipapi.co</strong> (for location). ipapi.co's free tier is rate-limited — if the location lookup fails, the IP address will still be shown.
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>Network Tools</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+
+<script>
+const btn = document.getElementById('lookupBtn');
+const resultEl = document.getElementById('result');
+const errorEl = document.getElementById('error');
+
+function row(k, v){
+  return `<div class="result-row"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+}
+
+btn.addEventListener('click', async () => {
+  resultEl.style.display = 'none';
+  errorEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Looking up...';
+  try {
+    const ipRes = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipRes.json();
+    let html = row('Public IP', ipData.ip);
+
+    try {
+      const geoRes = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+      const geo = await geoRes.json();
+      if (!geo.error) {
+        html += row('City', geo.city || '-');
+        html += row('Region', geo.region || '-');
+        html += row('Country', geo.country_name || '-');
+        html += row('ISP / Org', geo.org || '-');
+        html += row('Timezone', geo.timezone || '-');
+      }
+    } catch(geoErr) {
+      // location lookup failed, IP is still shown
+    }
+
+    resultEl.innerHTML = html;
+    resultEl.style.display = 'block';
+  } catch (err) {
+    errorEl.textContent = 'Could not reach the IP lookup service. Check your internet connection and try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Find My IP';
+  }
+});
+</script>
+</body>
+</html>
