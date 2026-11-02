@@ -25,7 +25,7 @@ header.site-header{
 }
 .brand{display:flex;align-items:center;gap:12px;}
 .brand-icon{width:36px;height:36px;color:var(--blue);}
-.brand h1{font-size:18px;margin:0;}
+.brand h1{font-size:24px;font-weight:800;color:var(--blue);margin:0;}
 .brand p{font-size:12px;color:var(--muted);margin:0;}
 nav.main-nav{display:flex;gap:28px;font-size:14px;font-weight:500;}
 nav.main-nav a.active{color:var(--blue);border-bottom:2px solid var(--blue);padding-bottom:4px;}
