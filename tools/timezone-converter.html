@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Zone Converter — Network Tools</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:520px){.two-col{grid-template-columns:1fr;}}
+  .section-gap{margin-top:24px;}
+  .big-result{
+    background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px;margin-top:18px;
+  }
+  .big-result .t{font-size:24px;font-weight:700;color:var(--blue);}
+  .big-result .s{font-size:13px;color:var(--muted);margin-top:4px;}
+  .zone-table{width:100%;border-collapse:collapse;font-size:14px;}
+  .zone-table th,.zone-table td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--border);}
+  .zone-table th{color:var(--muted);font-weight:600;font-size:12px;}
+  .zone-table td.mono{font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .zone-table tr.hl td{background:#eff6ff;font-weight:600;}
+  .table-wrap{overflow-x:auto;}
+  h3.sub{font-size:17px;margin:0 0 12px 0;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <div><h1>EJD Tech</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>Time Zone Converter</h2>
+  <p class="desc">Convert a date and time between zones such as IST, SGT, UTC, EST/EDT and PST/PDT. Daylight saving is handled automatically. Everything runs in your browser — nothing is stored.</p>
+
+  <div class="tool-box">
+    <div class="field">
+      <label for="dtInput">Date and time</label>
+      <input type="datetime-local" id="dtInput">
+    </div>
+    <div class="two-col">
+      <div class="field">
+        <label for="fromZone">From</label>
+        <select id="fromZone"></select>
+      </div>
+      <div class="field">
+        <label for="toZone">To</label>
+        <select id="toZone"></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="convertBtn" type="button">Convert</button>
+      <button class="btn" id="nowBtn" type="button" style="background:#475569;">Now</button>
+      <button class="btn" id="swapBtn" type="button" style="background:#475569;">Swap</button>
+    </div>
+    <div class="error" id="error"></div>
+
+    <div class="big-result" id="bigResult" style="display:none;">
+      <div class="t" id="resTime"></div>
+      <div class="s" id="resSub"></div>
+    </div>
+    <div class="result" id="detail" style="display:none;"></div>
+  </div>
+
+  <div class="tool-box section-gap" id="allBox" style="display:none;">
+    <h3 class="sub">Same moment in other zones</h3>
+    <div class="table-wrap">
+      <table class="zone-table">
+        <thead><tr><th>Zone</th><th>Date and time</th><th>Offset</th></tr></thead>
+        <tbody id="allBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tool-box section-gap">
+    <h3 class="sub">Unix timestamp converter</h3>
+    <div class="field">
+      <label for="epochInput">Unix timestamp (seconds or milliseconds)</label>
+      <input type="text" id="epochInput" placeholder="e.g. 1767225600">
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="epochBtn" type="button">Convert to date</button>
+      <button class="btn" id="epochNowBtn" type="button" style="background:#475569;">Current timestamp</button>
+    </div>
+    <div class="error" id="epochError"></div>
+    <div class="result" id="epochResult" style="display:none;"></div>
+  </div>
+
+  <div class="note-box">
+    Zone names are tied to the standard IANA time zone database in your browser, so US Eastern shows EST in winter and EDT in summer automatically. "UTC" is the reference time used in most server logs.
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div><strong>EJD Tech</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a></div>
+</footer>
+
+<script>
+// label, IANA zone, fixed abbreviation (null = ask the browser, using abbrLocale)
+const ZONES = [
+  { id:'IST',  label:'India (IST)',               tz:'Asia/Kolkata',        abbr:'IST' },
+  { id:'SGT',  label:'Singapore (SGT)',           tz:'Asia/Singapore',      abbr:'SGT' },
+  { id:'UTC',  label:'UTC',                       tz:'UTC',                 abbr:'UTC' },
+  { id:'GMT',  label:'UK (GMT/BST)',              tz:'Europe/London',       abbr:null, loc:'en-GB' },
+  { id:'EST',  label:'US Eastern (EST/EDT)',      tz:'America/New_York',    abbr:null, loc:'en-US' },
+  { id:'CST',  label:'US Central (CST/CDT)',      tz:'America/Chicago',     abbr:null, loc:'en-US' },
+  { id:'MST',  label:'US Mountain (MST/MDT)',     tz:'America/Denver',      abbr:null, loc:'en-US' },
+  { id:'PST',  label:'US Pacific (PST/PDT)',      tz:'America/Los_Angeles', abbr:null, loc:'en-US' },
+  { id:'CET',  label:'Central Europe (CET/CEST)', tz:'Europe/Paris',        abbr:null, loc:'en-GB' },
+  { id:'GST',  label:'Gulf / UAE (GST)',          tz:'Asia/Dubai',          abbr:'GST' },
+  { id:'HKT',  label:'Hong Kong (HKT)',           tz:'Asia/Hong_Kong',      abbr:'HKT' },
+  { id:'CNST', label:'China (CST)',               tz:'Asia/Shanghai',       abbr:'CST' },
+  { id:'JST',  label:'Japan (JST)',               tz:'Asia/Tokyo',          abbr:'JST' },
+  { id:'KST',  label:'Korea (KST)',               tz:'Asia/Seoul',          abbr:'KST' },
+  { id:'AEST', label:'Australia East (AEST/AEDT)',tz:'Australia/Sydney',    abbr:null, loc:'en-AU' },
+  { id:'SAST', label:'South Africa (SAST)',       tz:'Africa/Johannesburg', abbr:'SAST' },
+  { id:'BRT',  label:'Brazil (BRT)',              tz:'America/Sao_Paulo',   abbr:'BRT' }
+];
+const byId = Object.fromEntries(ZONES.map(z => [z.id, z]));
+
+const dtInput = document.getElementById('dtInput');
+const fromSel = document.getElementById('fromZone');
+const toSel = document.getElementById('toZone');
+const errorEl = document.getElementById('error');
+
+ZONES.forEach(z => {
+  fromSel.add(new Option(z.label, z.id));
+  toSel.add(new Option(z.label, z.id));
+});
+fromSel.value = 'IST';
+toSel.value = 'EST';
+
+// Offset (in minutes) of a zone at a given instant
+function offsetMinutes(tz, ms){
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz, hourCycle: 'h23',
+    year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', second:'2-digit'
+  }).formatToParts(new Date(ms));
+  const p = {};
+  parts.forEach(x => { p[x.type] = x.value; });
+  const asUtc = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+  return Math.round((asUtc - Math.floor(ms / 1000) * 1000) / 60000);
+}
+
+// Wall-clock time in a zone -> UTC milliseconds
+function zonedToUtc(y, mo, d, h, mi, tz){
+  const guess = Date.UTC(y, mo - 1, d, h, mi);
+  const off1 = offsetMinutes(tz, guess);
+  let t = guess - off1 * 60000;
+  const off2 = offsetMinutes(tz, t);
+  if (off2 !== off1) t = guess - off2 * 60000;
+  return t;
+}
+
+function abbrFor(zone, ms){
+  if (zone.abbr) return zone.abbr;
+  const parts = new Intl.DateTimeFormat(zone.loc || 'en-US', {
+    timeZone: zone.tz, timeZoneName: 'short'
+  }).formatToParts(new Date(ms));
+  const tn = parts.find(x => x.type === 'timeZoneName');
+  return tn ? tn.value : zone.tz;
+}
+
+function offsetLabel(min){
+  const sign = min < 0 ? '-' : '+';
+  const a = Math.abs(min);
+  const h = Math.floor(a / 60), m = a % 60;
+  return 'UTC' + sign + h + (m ? ':' + String(m).padStart(2, '0') : '');
+}
+
+function pad(n){ return String(n).padStart(2, '0'); }
+
+function formatInZone(zone, ms){
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: zone.tz, hourCycle: 'h23',
+    weekday:'short', day:'2-digit', month:'short', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  }).formatToParts(new Date(ms));
+  const p = {};
+  parts.forEach(x => { p[x.type] = x.value; });
+  return {
+    time: p.hour + ':' + p.minute,
+    date: p.weekday + ', ' + p.day + ' ' + p.month + ' ' + p.year,
+    abbr: abbrFor(zone, ms),
+    offset: offsetLabel(offsetMinutes(zone.tz, ms))
+  };
+}
+
+// Current time as a datetime-local string in a zone
+function nowInZoneValue(zone){
+  const ms = Date.now();
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: zone.tz, hourCycle: 'h23',
+    year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'
+  }).formatToParts(new Date(ms));
+  const p = {};
+  parts.forEach(x => { p[x.type] = x.value; });
+  return p.year + '-' + p.month + '-' + p.day + 'T' + p.hour + ':' + p.minute;
+}
+
+function row(k, v){
+  const r = document.createElement('div');
+  r.className = 'result-row';
+  const a = document.createElement('span'); a.className = 'k'; a.textContent = k;
+  const b = document.createElement('span'); b.className = 'v'; b.textContent = v;
+  r.appendChild(a); r.appendChild(b);
+  return r;
+}
+
+function convert(){
+  errorEl.textContent = '';
+  const val = dtInput.value;
+  if (!val){
+    errorEl.textContent = 'Please choose a date and time (or click Now).';
+    return;
+  }
+  const m = val.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!m){ errorEl.textContent = 'Invalid date and time.'; return; }
+  const [y, mo, d, h, mi] = m.slice(1).map(Number);
+
+  const from = byId[fromSel.value];
+  const to = byId[toSel.value];
+  const utcMs = zonedToUtc(y, mo, d, h, mi, from.tz);
+
+  const src = formatInZone(from, utcMs);
+  const dst = formatInZone(to, utcMs);
+  const diffMin = offsetMinutes(to.tz, utcMs) - offsetMinutes(from.tz, utcMs);
+  const dh = Math.floor(Math.abs(diffMin) / 60), dm = Math.abs(diffMin) % 60;
+  const diffText = diffMin === 0 ? 'same time' :
+    dh + 'h' + (dm ? ' ' + dm + 'm' : '') + (diffMin > 0 ? ' ahead' : ' behind');
+
+  document.getElementById('resTime').textContent = dst.time + ' ' + dst.abbr;
+  document.getElementById('resSub').textContent = dst.date + ' (' + dst.offset + ')';
+  document.getElementById('bigResult').style.display = 'block';
+
+  const detail = document.getElementById('detail');
+  detail.textContent = '';
+  detail.appendChild(row('Input', src.time + ' ' + src.abbr + ', ' + src.date));
+  detail.appendChild(row('Converted', dst.time + ' ' + dst.abbr + ', ' + dst.date));
+  detail.appendChild(row('Difference', to.label + ' is ' + diffText));
+  detail.appendChild(row('UTC', new Date(utcMs).toISOString().replace('T', ' ').slice(0, 16) + ' UTC'));
+  detail.appendChild(row('Unix timestamp', String(Math.floor(utcMs / 1000))));
+  detail.style.display = 'block';
+
+  // All-zones table
+  const body = document.getElementById('allBody');
+  body.textContent = '';
+  ZONES.forEach(z => {
+    const f = formatInZone(z, utcMs);
+    const tr = document.createElement('tr');
+    if (z.id === from.id || z.id === to.id) tr.className = 'hl';
+    const c1 = document.createElement('td'); c1.textContent = z.label;
+    const c2 = document.createElement('td'); c2.className = 'mono';
+    c2.textContent = f.date + ', ' + f.time + ' ' + f.abbr;
+    const c3 = document.createElement('td'); c3.className = 'mono'; c3.textContent = f.offset;
+    tr.appendChild(c1); tr.appendChild(c2); tr.appendChild(c3);
+    body.appendChild(tr);
+  });
+  document.getElementById('allBox').style.display = 'block';
+}
+
+document.getElementById('convertBtn').addEventListener('click', convert);
+document.getElementById('nowBtn').addEventListener('click', () => {
+  dtInput.value = nowInZoneValue(byId[fromSel.value]);
+  convert();
+});
+document.getElementById('swapBtn').addEventListener('click', () => {
+  const t = fromSel.value; fromSel.value = toSel.value; toSel.value = t;
+  if (dtInput.value) convert();
+});
+fromSel.addEventListener('change', () => { if (dtInput.value) convert(); });
+toSel.addEventListener('change', () => { if (dtInput.value) convert(); });
+dtInput.addEventListener('change', convert);
+
+// Unix timestamp section
+const epochErr = document.getElementById('epochError');
+const epochRes = document.getElementById('epochResult');
+
+function showEpoch(ms){
+  epochRes.textContent = '';
+  epochRes.appendChild(row('Seconds', String(Math.floor(ms / 1000))));
+  epochRes.appendChild(row('Milliseconds', String(ms)));
+  epochRes.appendChild(row('UTC', new Date(ms).toISOString().replace('T', ' ').slice(0, 19) + ' UTC'));
+  [byId.IST, byId.SGT, byId.EST, byId.PST].forEach(z => {
+    const f = formatInZone(z, ms);
+    epochRes.appendChild(row(z.label, f.date + ', ' + f.time + ' ' + f.abbr));
+  });
+  epochRes.style.display = 'block';
+}
+
+document.getElementById('epochBtn').addEventListener('click', () => {
+  epochErr.textContent = '';
+  epochRes.style.display = 'none';
+  const raw = document.getElementById('epochInput').value.trim();
+  if (!/^-?\d+$/.test(raw)){
+    epochErr.textContent = 'Enter a whole number, e.g. 1767225600';
+    return;
+  }
+  let n = Number(raw);
+  const ms = Math.abs(n) >= 1e11 ? n : n * 1000;  // 13+ digits = milliseconds
+  if (isNaN(new Date(ms).getTime())){
+    epochErr.textContent = 'That timestamp is out of range.';
+    return;
+  }
+  showEpoch(ms);
+});
+
+document.getElementById('epochNowBtn').addEventListener('click', () => {
+  const now = Date.now();
+  document.getElementById('epochInput').value = String(Math.floor(now / 1000));
+  epochErr.textContent = '';
+  showEpoch(now);
+});
+
+// Start with the current time in the "From" zone
+dtInput.value = nowInZoneValue(byId[fromSel.value]);
+convert();
+</script>
+</body>
+</html>
