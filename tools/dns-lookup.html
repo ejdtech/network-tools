@@ -3,8 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DNS Lookup — Network Tools</title>
-<meta name="robots" content="noindex">
+<title>DNS Lookup – A, MX, TXT, NS, CNAME Records | EJD Tech</title>
+<meta name="description" content="Free DNS lookup: check A, AAAA, MX, TXT, NS, CNAME, SOA and CAA records for any domain using Google Public DNS. Nothing is stored.">
+<link rel="canonical" href="https://ejdtech.in/tools/dns-lookup.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EJD Tech">
+<meta property="og:title" content="DNS Lookup – A, MX, TXT, NS, CNAME Records | EJD Tech">
+<meta property="og:description" content="Free DNS lookup: check A, AAAA, MX, TXT, NS, CNAME, SOA and CAA records for any domain using Google Public DNS. Nothing is stored.">
+<meta property="og:url" content="https://ejdtech.in/tools/dns-lookup.html">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -24,82 +30,179 @@
 <div class="tool-page">
   <a class="back-link" href="../index.html">&larr; Back to all tools</a>
   <h2>DNS Lookup</h2>
-  <p class="desc">Look up DNS records for any domain. Uses Google's public DNS-over-HTTPS API directly from your browser.</p>
+  <p class="desc">Look up the DNS records of any domain: A, AAAA, MX, TXT, NS, CNAME, SOA and CAA. Queries are sent from your browser to Google Public DNS. This site stores nothing.</p>
 
   <div class="tool-box">
     <div class="field">
-      <label for="domainInput">Domain</label>
-      <input type="text" id="domainInput" placeholder="e.g. example.com" value="example.com">
+      <label for="domainInput">Domain or hostname</label>
+      <input type="text" id="domainInput" placeholder="e.g. example.com" value="example.com" autocomplete="off" spellcheck="false">
     </div>
     <div class="field">
-      <label for="typeInput">Record Type</label>
+      <label for="typeInput">Record type</label>
       <select id="typeInput">
+        <option value="ALL">All common records (A, AAAA, CNAME, MX, NS, TXT)</option>
         <option value="A">A</option>
         <option value="AAAA">AAAA</option>
-        <option value="MX">MX</option>
-        <option value="TXT">TXT</option>
-        <option value="NS">NS</option>
         <option value="CNAME">CNAME</option>
+        <option value="MX">MX</option>
+        <option value="NS">NS</option>
+        <option value="TXT">TXT</option>
         <option value="SOA">SOA</option>
+        <option value="CAA">CAA</option>
       </select>
     </div>
     <div class="btn-row">
-      <button class="btn" id="lookupBtn">Lookup</button>
+      <button class="btn" id="lookupBtn" type="button">Lookup</button>
     </div>
     <div class="result" id="result" style="display:none;"></div>
     <div class="error" id="error"></div>
   </div>
 
   <div class="note-box">
-    Powered by <strong>dns.google/resolve</strong> — a free, public DNS-over-HTTPS endpoint. No data is stored by this site.
+    Powered by <strong>dns.google</strong>, Google's free public DNS-over-HTTPS service. It caches answers for the record's TTL, so a change you made a few minutes ago may take a while to show here.
   </div>
+
+<section class="about-tool">
+  <h3>About the DNS Lookup tool</h3>
+  <p>DNS (the Domain Name System) turns names such as <code>example.com</code> into the records that computers need: IP addresses, mail servers, name servers and more. A DNS lookup shows those records for a domain. It is one of the first things to check when a website does not load, when email is not arriving, or after you have changed DNS settings at your registrar.</p>
+
+  <h4>Record types</h4>
+  <div class="table-wrap">
+  <table class="mini-table">
+    <thead><tr><th>Type</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td>The IPv4 address of the host</td></tr>
+      <tr><td>AAAA</td><td>The IPv6 address of the host</td></tr>
+      <tr><td>CNAME</td><td>An alias that points one name to another name</td></tr>
+      <tr><td>MX</td><td>The mail servers for the domain, each with a priority (lower is tried first)</td></tr>
+      <tr><td>NS</td><td>The authoritative name servers for the domain</td></tr>
+      <tr><td>TXT</td><td>Free text, used for SPF, DKIM, DMARC and domain ownership verification</td></tr>
+      <tr><td>SOA</td><td>Start of Authority: the primary name server, admin contact and zone timers</td></tr>
+      <tr><td>CAA</td><td>Which certificate authorities may issue SSL certificates for the domain</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>What TTL means</h4>
+  <p>TTL (time to live) is the number of seconds a resolver may cache a record. After you change a record, resolvers that cached the old one keep serving it until its TTL runs out. This is why a change can take minutes or hours to appear everywhere.</p>
+
+  <h4>Command-line equivalents</h4>
+  <p>The same lookups from a terminal: <code>nslookup -type=MX example.com</code> or <code>dig MX example.com</code>.</p>
+
+  <h3>Frequently asked questions</h3>
+  <h4>Why does this show different results from my own computer?</h4>
+  <p>This tool asks Google Public DNS, while your computer asks your ISP's or company's resolver. Each caches records separately, so they can disagree for a while after a change.</p>
+  <h4>What does NXDOMAIN mean?</h4>
+  <p>It means the domain name does not exist in DNS at all. Check the spelling, or whether the domain has expired or was never registered.</p>
+  <h4>The domain exists but I get no records. Why?</h4>
+  <p>That record type is simply not set for the name. For example, many domains have no AAAA record if they do not use IPv6.</p>
+  <h4>How do I check my email setup?</h4>
+  <p>Look up <strong>MX</strong> to see where mail is delivered, and <strong>TXT</strong> to see the SPF record (it starts with <code>v=spf1</code>). A DMARC policy is a TXT record on the name <code>_dmarc.</code> followed by your domain.</p>
+  <h4>Is my search stored?</h4>
+  <p>EJD Tech has no server-side code or database and stores nothing. Your browser sends the query directly to Google Public DNS, which handles it under its own privacy policy.</p>
+  <div class="related"><strong>Related tools:</strong> <a href="public-ip.html">Find My Public IP</a><a href="subnet-calculator.html">Subnet Calculator</a><a href="password-generator.html">Password Generator</a><a href="timezone-converter.html">Time Zone Converter</a></div>
+</section>
 </div>
 
 <footer class="site-footer">
-  <div><strong>Network Tools</strong></div>
+  <div><strong>EJD Tech</strong></div>
   <div class="f-links"><a href="../index.html">Home</a></div>
 </footer>
 
 <script>
-document.getElementById('lookupBtn').addEventListener('click', async () => {
-  const errorEl = document.getElementById('error');
-  const resultEl = document.getElementById('result');
+const TYPE_NAMES = {1:'A', 2:'NS', 5:'CNAME', 6:'SOA', 15:'MX', 16:'TXT', 28:'AAAA', 257:'CAA'};
+const COMMON = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT'];
+const STATUS_TEXT = {
+  2: 'The DNS server could not answer (SERVFAIL). The domain may have a DNS configuration problem.',
+  3: 'This domain does not exist (NXDOMAIN).',
+  5: 'The DNS server refused the query.'
+};
+
+const domainInput = document.getElementById('domainInput');
+const typeInput = document.getElementById('typeInput');
+const errorEl = document.getElementById('error');
+const resultEl = document.getElementById('result');
+const btn = document.getElementById('lookupBtn');
+
+// Accept pasted URLs: strip protocol, path, port and trailing dot
+function normalizeDomain(raw){
+  let d = raw.trim().toLowerCase();
+  d = d.replace(/^[a-z]+:\/\//, '');
+  d = d.split('/')[0].split('?')[0].split('#')[0];
+  d = d.replace(/:\d+$/, '').replace(/\.$/, '');
+  return d;
+}
+function isValidDomain(d){
+  return d.length > 0 && d.length <= 253 && d.indexOf('.') > 0 &&
+    /^[a-z0-9_]([a-z0-9_.-]*[a-z0-9_])?$/.test(d) && d.indexOf('..') === -1;
+}
+
+async function query(domain, type){
+  const res = await fetch('https://dns.google/resolve?name=' + encodeURIComponent(domain) + '&type=' + type);
+  if (!res.ok) throw new Error('bad response');
+  return res.json();
+}
+
+function addRow(k, v){
+  const r = document.createElement('div');
+  r.className = 'result-row';
+  const a = document.createElement('span'); a.className = 'k'; a.textContent = k;
+  const b = document.createElement('span'); b.className = 'v'; b.textContent = v;
+  b.style.wordBreak = 'break-all'; b.style.textAlign = 'right'; b.style.maxWidth = '65%';
+  r.appendChild(a); r.appendChild(b);
+  resultEl.appendChild(r);
+}
+
+async function lookup(){
   errorEl.textContent = '';
   resultEl.style.display = 'none';
+  resultEl.textContent = '';
 
-  const domain = document.getElementById('domainInput').value.trim();
-  const type = document.getElementById('typeInput').value;
-  if (!domain){
-    errorEl.textContent = 'Please enter a domain name.';
+  const domain = normalizeDomain(domainInput.value);
+  if (!isValidDomain(domain)){
+    errorEl.textContent = 'Please enter a valid domain name, e.g. example.com';
     return;
   }
+  domainInput.value = domain;
 
-  const btn = document.getElementById('lookupBtn');
+  const selected = typeInput.value;
+  const types = selected === 'ALL' ? COMMON : [selected];
+
   btn.disabled = true;
   btn.textContent = 'Looking up...';
 
   try {
-    const res = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=${type}`);
-    const data = await res.json();
+    const responses = await Promise.all(types.map(t => query(domain, t)));
+    let total = 0;
+    let statusMsg = '';
+    const seen = new Set();
 
-    if (!data.Answer || data.Answer.length === 0){
-      resultEl.innerHTML = `<div class="result-row"><span class="k">Result</span><span class="v">No ${type} records found</span></div>`;
-      resultEl.style.display = 'block';
-    } else {
-      let html = '';
-      data.Answer.forEach(rec => {
-        html += `<div class="result-row"><span class="k">${rec.name} (TTL ${rec.TTL}s)</span><span class="v">${rec.data}</span></div>`;
+    responses.forEach(data => {
+      if (data.Status !== 0 && STATUS_TEXT[data.Status]) statusMsg = STATUS_TEXT[data.Status];
+      (data.Answer || []).forEach(rec => {
+        const key = rec.type + '|' + rec.name + '|' + rec.data;
+        if (seen.has(key)) return;           // CNAME chains repeat across queries
+        seen.add(key);
+        const tName = TYPE_NAMES[rec.type] || ('TYPE' + rec.type);
+        addRow(tName + ' · ' + rec.name.replace(/\.$/, '') + ' · TTL ' + rec.TTL + 's', rec.data);
+        total++;
       });
-      resultEl.innerHTML = html;
-      resultEl.style.display = 'block';
+    });
+
+    if (total === 0){
+      addRow('Result', statusMsg || ('No ' + (selected === 'ALL' ? '' : selected + ' ') + 'records found'));
     }
+    resultEl.style.display = 'block';
   } catch (err) {
-    errorEl.textContent = 'Lookup failed. Check the domain name and your internet connection.';
+    errorEl.textContent = 'Lookup failed. Check your internet connection and try again.';
   } finally {
     btn.disabled = false;
     btn.textContent = 'Lookup';
   }
-});
+}
+
+btn.addEventListener('click', lookup);
+domainInput.addEventListener('keydown', e => { if (e.key === 'Enter') lookup(); });
 </script>
 </body>
 </html>
