@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Subnet Calculator — Network Tools</title>
+<title>Subnet Calculator – CIDR, Netmask &amp; Usable IP Range | EJD Tech</title>
+<meta name="description" content="Free IPv4 subnet calculator: network, broadcast, subnet mask, wildcard mask and usable host range from an IP and CIDR prefix.">
+<link rel="canonical" href="https://ejdtech.in/tools/subnet-calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EJD Tech">
+<meta property="og:title" content="Subnet Calculator – CIDR, Netmask &amp; Usable IP Range | EJD Tech">
+<meta property="og:description" content="Free IPv4 subnet calculator: network, broadcast, subnet mask, wildcard mask and usable host range from an IP and CIDR prefix.">
+<meta property="og:url" content="https://ejdtech.in/tools/subnet-calculator.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -39,6 +47,43 @@
     <div class="result" id="result" style="display:none;"></div>
     <div class="error" id="error"></div>
   </div>
+
+<section class="about-tool">
+  <h3>About the Subnet Calculator</h3>
+  <p>A subnet calculator works out the details of an IPv4 network from an IP address and a prefix length written in <strong>CIDR notation</strong>, such as <code>192.168.1.10/24</code>. The prefix (the number after the slash) says how many of the 32 address bits identify the network. The remaining bits identify hosts inside it.</p>
+
+  <h4>What the results mean</h4>
+  <p><strong>Network address</strong> is the first address of the subnet and identifies it. <strong>Broadcast address</strong> is the last address, used to reach all hosts in the subnet. <strong>Subnet mask</strong> is the same prefix written as dotted decimal. <strong>Wildcard mask</strong> is the inverse of the mask, used in ACLs and routing protocols on many routers. <strong>Usable hosts</strong> are the addresses you can assign to devices.</p>
+
+  <h4>Worked example: 192.168.1.10/24</h4>
+  <p>Network <code>192.168.1.0</code>, broadcast <code>192.168.1.255</code>, mask <code>255.255.255.0</code>, wildcard <code>0.0.0.255</code>, usable range <code>192.168.1.1</code> to <code>192.168.1.254</code> (254 hosts).</p>
+
+  <h4>Common prefix lengths</h4>
+  <div class="table-wrap">
+  <table class="mini-table">
+    <thead><tr><th>Prefix</th><th>Subnet mask</th><th>Total addresses</th><th>Usable hosts</th></tr></thead>
+    <tbody>
+      <tr><td>/24</td><td>255.255.255.0</td><td>256</td><td>254</td></tr>
+      <tr><td>/25</td><td>255.255.255.128</td><td>128</td><td>126</td></tr>
+      <tr><td>/26</td><td>255.255.255.192</td><td>64</td><td>62</td></tr>
+      <tr><td>/27</td><td>255.255.255.224</td><td>32</td><td>30</td></tr>
+      <tr><td>/28</td><td>255.255.255.240</td><td>16</td><td>14</td></tr>
+      <tr><td>/29</td><td>255.255.255.248</td><td>8</td><td>6</td></tr>
+      <tr><td>/30</td><td>255.255.255.252</td><td>4</td><td>2</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Frequently asked questions</h3>
+  <h4>How do I calculate the number of usable hosts?</h4>
+  <p>Use <code>2<sup>(32 &minus; prefix)</sup> &minus; 2</code>. The two subtracted addresses are the network and broadcast addresses. For /26 that is 2<sup>6</sup> &minus; 2 = 62.</p>
+  <h4>What about /31 and /32?</h4>
+  <p>A /31 has two addresses and is used on point-to-point links, with no separate network or broadcast address (RFC 3021). A /32 is a single host address, often used for loopbacks and host routes.</p>
+  <h4>Is my data sent anywhere?</h4>
+  <p>No. All calculations run in your browser, and nothing is stored or transmitted.</p>
+  <div class="related"><strong>Related tools:</strong> <a href="public-ip.html">Find My Public IP</a><a href="password-generator.html">Password Generator</a><a href="timezone-converter.html">Time Zone Converter</a></div>
+</section>
+
 </div>
 
 <footer class="site-footer">

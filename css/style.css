@@ -111,3 +111,18 @@ footer.site-footer{
   font-size:13px;color:var(--muted);
 }
 footer.site-footer .f-links{display:flex;gap:20px;}
+
+/* SEO / explanatory content under each tool */
+.about-tool{margin-top:32px;line-height:1.65;font-size:15px;color:#334155;}
+.about-tool h3{font-size:19px;margin:28px 0 8px 0;color:var(--text);}
+.about-tool h4{font-size:15px;margin:18px 0 4px 0;color:var(--text);}
+.about-tool p{margin:0 0 10px 0;}
+.about-tool code{background:#eef2f9;padding:1px 5px;border-radius:4px;font-size:13px;}
+.table-wrap{overflow-x:auto;}
+.mini-table{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 4px 0;background:#fff;}
+.mini-table th,.mini-table td{text-align:left;padding:8px 10px;border:1px solid var(--border);}
+.mini-table th{background:#f1f5f9;font-size:12px;color:var(--muted);}
+.related{margin-top:24px;padding-top:16px;border-top:1px solid var(--border);font-size:14px;}
+.related a{color:var(--blue);margin-left:14px;}
+.home-about{margin-top:36px;line-height:1.65;font-size:15px;color:#334155;}
+.home-about h3{font-size:19px;color:var(--text);margin:0 0 8px 0;}

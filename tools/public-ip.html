@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Find My Public IP — Network Tools</title>
+<title>Find My Public IP Address – Location &amp; ISP | EJD Tech</title>
+<meta name="description" content="Find your public IP address instantly, with approximate location and ISP. Free, no sign-up, nothing stored.">
+<link rel="canonical" href="https://ejdtech.in/tools/public-ip.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EJD Tech">
+<meta property="og:title" content="Find My Public IP Address – Location &amp; ISP | EJD Tech">
+<meta property="og:description" content="Find your public IP address instantly, with approximate location and ISP. Free, no sign-up, nothing stored.">
+<meta property="og:url" content="https://ejdtech.in/tools/public-ip.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -35,6 +43,26 @@
   <div class="note-box">
     This tool calls two free public APIs directly from your browser: <strong>api.ipify.org</strong> (for the IP address) and <strong>ipapi.co</strong> (for location). ipapi.co's free tier is rate-limited — if the location lookup fails, the IP address will still be shown.
   </div>
+
+<section class="about-tool">
+  <h3>About the Find My Public IP tool</h3>
+  <p>Your <strong>public IP address</strong> is the address that websites and online services see when your device connects to the internet. It is assigned by your internet service provider (ISP) and is shared by the devices on your home or office network. This tool shows that address, together with the approximate city, region, country and ISP linked to it.</p>
+
+  <h4>Public IP vs private IP</h4>
+  <p>Inside a home or office network, devices use <strong>private</strong> addresses from ranges such as <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code> and <code>192.168.0.0/16</code>. Your router translates them to one public address using NAT (Network Address Translation). That is why the address you see in <code>ipconfig</code> or <code>ip a</code> is different from the one shown here.</p>
+
+  <h3>Frequently asked questions</h3>
+  <h4>Why does the tool show a different IP when I use a VPN or proxy?</h4>
+  <p>Websites see the exit address of the VPN or proxy server, not your own connection, so this tool shows that address instead.</p>
+  <h4>How accurate is the location?</h4>
+  <p>IP location is approximate. It is usually accurate to the country and often to the region, but it can show the city where your ISP routes traffic, not where you are sitting.</p>
+  <h4>Does my IP change?</h4>
+  <p>Most home connections have a dynamic public IP that can change when the router restarts or the ISP reassigns it. Business connections often have a static IP that stays the same.</p>
+  <h4>Does EJD Tech store my IP address?</h4>
+  <p>No. This site has no server-side code or database and stores nothing. To find your address and location, your browser contacts two third-party services (<code>api.ipify.org</code> and <code>ipapi.co</code>) directly, and they see your request in the same way as any website you visit.</p>
+  <div class="related"><strong>Related tools:</strong> <a href="subnet-calculator.html">Subnet Calculator</a><a href="password-generator.html">Password Generator</a><a href="timezone-converter.html">Time Zone Converter</a></div>
+</section>
+
 </div>
 
 <footer class="site-footer">

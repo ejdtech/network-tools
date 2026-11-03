@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Time Zone Converter — Network Tools</title>
+<title>Time Zone Converter – IST, UTC, EST, PST &amp; Unix Timestamp | EJD Tech</title>
+<meta name="description" content="Convert time between IST, SGT, UTC, EST/EDT, PST/PDT and more, with automatic daylight saving and a Unix timestamp converter.">
+<link rel="canonical" href="https://ejdtech.in/tools/timezone-converter.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EJD Tech">
+<meta property="og:title" content="Time Zone Converter – IST, UTC, EST, PST &amp; Unix Timestamp | EJD Tech">
+<meta property="og:description" content="Convert time between IST, SGT, UTC, EST/EDT, PST/PDT and more, with automatic daylight saving and a Unix timestamp converter.">
+<meta property="og:url" content="https://ejdtech.in/tools/timezone-converter.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="../css/style.css">
 <style>
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -97,6 +105,28 @@
   <div class="note-box">
     Zone names are tied to the standard IANA time zone database in your browser, so US Eastern shows EST in winter and EDT in summer automatically. "UTC" is the reference time used in most server logs.
   </div>
+
+<section class="about-tool">
+  <h3>About the Time Zone Converter</h3>
+  <p>This converter turns a date and time in one zone into the matching time in another, for example <strong>IST to EST</strong>, <strong>SGT to UTC</strong> or <strong>UTC to PST</strong>. It is useful for reading server logs, planning maintenance windows across regions and scheduling meetings. Daylight saving time is applied automatically for the date you enter.</p>
+
+  <h4>UTC and zone names</h4>
+  <p><strong>UTC</strong> (Coordinated Universal Time) is the reference time used by most servers and logs. Each zone is defined relative to it, for example India is UTC+5:30 and Singapore is UTC+8. Under the hood, this tool uses the standard IANA time zone names such as <code>Asia/Kolkata</code> and <code>America/New_York</code>.</p>
+  <h4>Why abbreviations can be confusing</h4>
+  <p>The same abbreviation can mean different zones: IST can be India, Ireland or Israel, and CST can be US Central, China or Cuba. The zone list here uses clear labels, such as "India (IST)" and "China (CST)".</p>
+  <h4>EST vs EDT</h4>
+  <p>US Eastern time is UTC&minus;5 in winter (EST) and UTC&minus;4 in summer (EDT). That is why the gap between India and US Eastern is 10 hours 30 minutes in winter and 9 hours 30 minutes in summer. Choose "US Eastern" and the tool uses the right one for your date.</p>
+  <h4>Unix timestamps</h4>
+  <p>A Unix timestamp is the number of seconds since 1 January 1970 00:00:00 UTC. A 13-digit value is in milliseconds. For example, <code>1767225600</code> is 1 January 2026 00:00:00 UTC. Use the timestamp section on this page to convert a value from a log or API into readable dates.</p>
+
+  <h3>Frequently asked questions</h3>
+  <h4>Does it handle daylight saving changes?</h4>
+  <p>Yes, for the zones that use it (UK, Central Europe, the US zones and Australia East), using your browser's built-in time zone database.</p>
+  <h4>Is my data stored?</h4>
+  <p>No. All conversions happen in your browser and nothing is sent or saved.</p>
+  <div class="related"><strong>Related tools:</strong> <a href="public-ip.html">Find My Public IP</a><a href="subnet-calculator.html">Subnet Calculator</a><a href="password-generator.html">Password Generator</a></div>
+</section>
+
 </div>
 
 <footer class="site-footer">
