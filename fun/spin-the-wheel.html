@@ -46,6 +46,7 @@
   .history{margin:10px 0 0 0;padding-left:20px;font-size:14px;}
   .history li{padding:2px 0;}
   h3.sub{font-size:16px;margin:20px 0 6px 0;}
+  .info{font-size:13px;color:var(--muted);margin-top:8px;min-height:18px;}
 </style>
 </head>
 <body>
@@ -88,13 +89,15 @@
           <button class="chip" type="button" data-preset="team">Sample team</button>
         </div>
 
-        <label class="check"><input type="checkbox" id="removeWinner"> Remove the winner from the list after each spin</label>
+        <label class="check"><input type="checkbox" id="removeWinner" checked> Remove the winner from the wheel after each spin</label>
 
         <div class="btn-row">
           <button class="btn secondary" id="shuffleBtn" type="button">Shuffle order</button>
           <button class="btn secondary" id="clearBtn" type="button">Clear list</button>
+          <button class="btn secondary" id="restoreBtn" type="button" style="display:none;">Restore removed names</button>
         </div>
         <div class="error" id="error"></div>
+        <div class="info" id="info" aria-live="polite"></div>
       </div>
     </div>
 
@@ -104,7 +107,7 @@
     </div>
 
     <div id="historyBox" style="display:none;">
-      <h3 class="sub">Previous results</h3>
+      <h3 class="sub">Results, in the order picked</h3>
       <ol class="history" id="history"></ol>
       <button class="chip" id="clearHistoryBtn" type="button" style="margin-top:8px;">Clear results</button>
     </div>
@@ -118,14 +121,14 @@
   <p>Pick who goes first in a stand-up, choose a presenter for the next meeting, decide where the team eats lunch, draw a winner for a small giveaway, pick a student to answer, or settle any "who will do it" question fairly.</p>
 
   <h4>How to use it</h4>
-  <p>Type or paste your entries, one per line, or tap one of the quick lists. Click <strong>Spin the wheel</strong> (or click the wheel itself). Tick <strong>Remove the winner</strong> if you want to draw several different people in turn, for example for first, second and third prize.</p>
+  <p>Type or paste your entries, one per line, or tap one of the quick lists. Click <strong>Spin the wheel</strong> (or click the wheel itself). By default the winner is <strong>removed from the wheel</strong> after each spin, so the same name cannot be picked twice. That suits picking several different people in turn, such as first, second and third prize. Untick the option for choices where repeats are fine, such as Yes or No. Use <strong>Restore removed names</strong> to put everyone back.</p>
 
   <h4>How the choice is made</h4>
   <p>The winner is chosen first, using your browser's secure random number generator (<code>crypto.getRandomValues</code>) with no bias. The animation then slows down and stops on that winner. Every entry has the same chance, and a name entered twice has twice the chance.</p>
 
   <h3>Frequently asked questions</h3>
   <h4>Is the wheel really random?</h4>
-  <p>Yes. Each spin is an independent random choice. Earlier results do not change the next one, so the same name can win twice in a row unless you remove winners.</p>
+  <p>Yes. Each spin is an independent random choice among the names currently on the wheel. With "Remove the winner" ticked (the default), a name that has been picked leaves the wheel, so it cannot win again. With it unticked, the same name can win twice in a row.</p>
   <h4>How many entries can I add?</h4>
   <p>Up to 60. Beyond that the labels become too small to read.</p>
   <h4>Can I give some entries a better chance?</h4>
@@ -168,12 +171,15 @@ const errorEl = document.getElementById('error');
 const countLabel = document.getElementById('countLabel');
 const historyBox = document.getElementById('historyBox');
 const historyEl = document.getElementById('history');
-const controls = [spinBtn, shuffleBtn, clearBtn, entriesEl, removeEl,
+const restoreBtn = document.getElementById('restoreBtn');
+const infoEl = document.getElementById('info');
+const controls = [spinBtn, shuffleBtn, clearBtn, restoreBtn, entriesEl, removeEl,
   ...document.querySelectorAll('.chip[data-preset]')];
 
 let rotation = 0;
 let spinning = false;
 let history = [];
+let removed = [];
 
 // --- secure, unbiased randomness ---
 function randInt(max){
@@ -297,13 +303,18 @@ function showWinner(name){
   winnerEl.classList.remove('pop');
   void winnerEl.offsetWidth;          // restart the animation
   winnerEl.classList.add('pop');
-  history.unshift(name);
-  if (history.length > 15) history.pop();
+  history.push(name);
+  if (history.length > 60) history.shift();
   renderHistory();
+}
+
+function updateRestore(){
+  restoreBtn.style.display = removed.length ? 'inline-block' : 'none';
 }
 
 function spin(){
   if (spinning) return;
+  infoEl.textContent = '';
   errorEl.textContent = '';
   const entries = getEntries();
   const n = entries.length;
@@ -340,10 +351,18 @@ function spin(){
       if (removeEl.checked){
         const lines = entriesEl.value.split('\n');
         const at = lines.findIndex(l => l.trim() === name);
-        if (at !== -1){ lines.splice(at, 1); entriesEl.value = lines.join('\n'); }
+        if (at !== -1){ lines.splice(at, 1); entriesEl.value = lines.join('\n'); removed.push(name); }
       }
       setBusy(false);
       refresh();
+      updateRestore();
+      if (removeEl.checked && getEntries().length < 2){
+        infoEl.textContent = getEntries().length === 1
+          ? 'Only one entry is left on the wheel. Click "Restore removed names" to start again.'
+          : 'Everyone has been picked. Click "Restore removed names" to start again.';
+      } else {
+        infoEl.textContent = '';
+      }
     }
   }
   requestAnimationFrame(frame);
@@ -364,13 +383,28 @@ shuffleBtn.addEventListener('click', () => {
 });
 clearBtn.addEventListener('click', () => {
   entriesEl.value = '';
+  removed = [];
   winnerEl.textContent = 'Spin to pick';
+  infoEl.textContent = '';
+  updateRestore();
+  refresh();
+});
+restoreBtn.addEventListener('click', () => {
+  const current = entriesEl.value.split('\n').map(s => s.trim()).filter(Boolean);
+  entriesEl.value = current.concat(removed).join('\n');
+  removed = [];
+  infoEl.textContent = '';
+  updateRestore();
   refresh();
 });
 document.querySelectorAll('.chip[data-preset]').forEach(b => {
   b.addEventListener('click', () => {
     entriesEl.value = PRESETS[b.dataset.preset].join('\n');
+    removeEl.checked = b.dataset.preset !== 'yesno';   // Yes/No needs repeats
+    removed = [];
     winnerEl.textContent = 'Spin to pick';
+    infoEl.textContent = '';
+    updateRestore();
     refresh();
   });
 });
