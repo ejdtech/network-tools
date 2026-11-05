@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Team Generator – Split Names into Groups | EJD Tech</title>
+<meta name="description" content="Free random team generator: paste names, choose the number of teams or team size, and get fair balanced groups. Includes a draw code so anyone can verify the result.">
+<link rel="canonical" href="https://ejdtech.in/fun/team-splitter.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EJD Tech">
+<meta property="og:title" content="Random Team Generator – Split Names into Groups | EJD Tech">
+<meta property="og:description" content="Free random team generator: paste names, choose the number of teams or team size, and get fair balanced groups. Includes a draw code so anyone can verify the result.">
+<meta property="og:url" content="https://ejdtech.in/fun/team-splitter.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .tool-page.wide{max-width:900px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+  @media(max-width:760px){.form-grid{grid-template-columns:1fr;}}
+  #names{
+    width:100%;min-height:250px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-size:14px;font-family:inherit;line-height:1.5;resize:vertical;
+  }
+  .meta-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin:6px 0 0 0;}
+  .radio-row{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px;font-size:14px;}
+  .radio-row label{display:flex;gap:6px;align-items:center;font-weight:500;margin:0;}
+  .radio-row input{width:auto;}
+  .code-row{display:flex;gap:8px;}
+  .code-row input{flex:1;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;text-transform:uppercase;}
+  .hint{font-size:12px;color:var(--muted);margin:4px 0 0 0;}
+  .btn.secondary{background:#475569;}
+  .btn:disabled{opacity:.55;cursor:not-allowed;}
+  .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:14px;}
+  .team{background:#fff;border:1px solid var(--border);border-top:4px solid var(--blue);border-radius:10px;padding:14px;}
+  .team h4{margin:0 0 8px 0;font-size:15px;}
+  .team h4 span{font-weight:500;color:var(--muted);font-size:12px;}
+  .team ul{margin:0;padding-left:18px;font-size:14px;line-height:1.7;}
+  .banner{border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:16px;}
+  .banner.verify{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;}
+  .trust{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:#334155;margin-top:16px;line-height:1.6;}
+  .status{font-size:13px;color:#16a34a;min-height:18px;margin-top:8px;}
+  .status.bad{color:#dc2626;}
+  h3.sub{font-size:16px;margin:22px 0 4px 0;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <div><h1>EJD Tech</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../fun.html" class="active">Office Fun</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page wide">
+  <a class="back-link" href="../fun.html">&larr; Back to Office Fun</a>
+  <h2>Random Team / Group Splitter</h2>
+  <p class="desc">Paste a list of names, choose how many teams (or how many people per team), and get fair, balanced groups. Each draw has a <strong>draw code</strong>, so anyone can re-create the same result and check it. Nothing is stored.</p>
+
+  <div class="tool-box">
+    <div id="verifyBanner" class="banner verify" style="display:none;"></div>
+
+    <div class="form-grid">
+      <div>
+        <label for="names" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Names (one per line)</label>
+        <textarea id="names" spellcheck="false"></textarea>
+        <div class="meta-row"><span id="countLabel">0 people</span><span>Max 200 people</span></div>
+      </div>
+
+      <div>
+        <div class="radio-row">
+          <label><input type="radio" name="mode" value="teams" checked> Number of teams</label>
+          <label><input type="radio" name="mode" value="size"> People per team</label>
+        </div>
+        <div class="field">
+          <label for="kInput" id="kLabel">Number of teams</label>
+          <input type="number" id="kInput" min="1" max="200" value="3">
+        </div>
+        <div class="field">
+          <label for="prefixInput">Team name</label>
+          <input type="text" id="prefixInput" maxlength="20" value="Team">
+        </div>
+        <div class="field">
+          <label for="seedInput">Draw code</label>
+          <div class="code-row">
+            <input type="text" id="seedInput" maxlength="40" autocomplete="off" spellcheck="false">
+            <button class="btn secondary" id="newCodeBtn" type="button">New code</button>
+          </div>
+          <p class="hint">Same names + same code = same teams. The order you type the names in does not matter.</p>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="splitBtn" type="button">Split into teams</button>
+          <button class="btn secondary" id="redrawBtn" type="button">New code &amp; re-draw</button>
+        </div>
+        <div class="error" id="error"></div>
+      </div>
+    </div>
+
+    <div id="resultArea" style="display:none;">
+      <h3 class="sub" id="resultTitle">Teams</h3>
+      <div class="teams" id="teams"></div>
+
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn" id="copyTextBtn" type="button">Copy as text</button>
+        <button class="btn secondary" id="copyLinkBtn" type="button">Copy verification link</button>
+        <button class="btn secondary" id="csvBtn" type="button">Download CSV</button>
+      </div>
+      <div class="status" id="status" aria-live="polite"></div>
+
+      <div class="trust">
+        <strong>How to share this so people trust it:</strong> send the teams <em>with</em> the draw code (the "Copy as text" button includes it, plus a link). Anyone who opens the link sees the same list and code, and the page rebuilds the same teams on their own device. If someone had changed a name or the draw, it would not match. For extra confidence, run the draw live on a shared screen, or agree the draw code with the group before you split.
+      </div>
+    </div>
+  </div>
+
+<section class="about-tool">
+  <h3>About the Random Team Generator</h3>
+  <p>The Random Team Generator splits a list of people into groups at random. You choose either a number of teams or a team size, and it deals everyone into balanced teams, so no team is more than one person larger than another. It is useful for project groups, hackathons, workshop breakout rooms, sports and games, classroom activities and office events.</p>
+
+  <h4>How it works</h4>
+  <p>The tool sorts the names, shuffles them using a random sequence created from the draw code, and then deals them out one by one across the teams. Because the shuffle is based on the code, the same names with the same code always give the same teams. That is what makes a result checkable.</p>
+
+  <h4>Can the organiser cheat?</h4>
+  <p>A web page cannot stop an organiser from trying several draw codes until they like the result, and then sharing only that one. What the draw code does prevent is quiet edits: nobody can remove a name or swap two people without the result changing. To rule out code-shopping as well, do one of these:</p>
+  <p><strong>1.</strong> Run the draw live on a shared screen or in a meeting, with everyone watching. <strong>2.</strong> Agree the draw code in advance, for example a number each person suggests, added together. <strong>3.</strong> Let someone who is not in the draw press the button, and share the code straight away.</p>
+
+  <h3>Frequently asked questions</h3>
+  <h4>How are uneven numbers handled?</h4>
+  <p>Teams differ by at most one person. For example, 10 people in 3 teams gives teams of 4, 3 and 3. With "People per team" set to 4, the tool uses 3 teams so that no team is larger than 4.</p>
+  <h4>What does the verification link contain?</h4>
+  <p>The names, the settings and the draw code, packed into the part of the address after the <code>#</code>. That part is never sent to any server, but anyone you give the link to can read the names, so share it only with your group.</p>
+  <h4>Are my names stored anywhere?</h4>
+  <p>No. EJD Tech has no server-side code or database. Your list exists only in the open page, or inside a link you choose to share.</p>
+  <h4>Two people have the same name. What should I do?</h4>
+  <p>Add a surname or initial, such as "Ravi K" and "Ravi S", so you can tell them apart in the result.</p>
+  <h4>Can I redo the split?</h4>
+  <p>Yes. Click "New code &amp; re-draw" for a fresh random draw, or "Split into teams" to repeat the draw for the code currently shown.</p>
+  <div class="related"><strong>More:</strong> <a href="../fun.html">Office Fun</a><a href="spin-the-wheel.html">Spin the Wheel</a><a href="../tools/password-generator.html">Password Generator</a></div>
+</section>
+</div>
+
+<footer class="site-footer">
+  <div><strong>EJD Tech</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a><a href="../fun.html">Office Fun</a></div>
+</footer>
+
+<script>
+const MAX_NAMES = 200, MAX_LEN = 60;
+const COLORS = ['#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#db2777','#4d7c0f','#475569','#ea580c'];
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+const namesEl = document.getElementById('names');
+const kEl = document.getElementById('kInput');
+const kLabel = document.getElementById('kLabel');
+const prefixEl = document.getElementById('prefixInput');
+const seedEl = document.getElementById('seedInput');
+const errorEl = document.getElementById('error');
+const statusEl = document.getElementById('status');
+const countLabel = document.getElementById('countLabel');
+const resultArea = document.getElementById('resultArea');
+const teamsEl = document.getElementById('teams');
+const resultTitle = document.getElementById('resultTitle');
+const banner = document.getElementById('verifyBanner');
+
+let current = null;   // { names, mode, k, seed, prefix, teams }
+
+// ---------- seeded random (same code + same names => same teams) ----------
+function xmur3(str){
+  let h = 1779033703 ^ str.length;
+  for (let i = 0; i < str.length; i++){
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return function(){
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  };
+}
+function sfc32(a, b, c, d){
+  return function(){
+    a >>>= 0; b >>>= 0; c >>>= 0; d >>>= 0;
+    let t = (a + b) | 0;
+    a = b ^ (b >>> 9);
+    b = (c + (c << 3)) | 0;
+    c = (c << 21) | (c >>> 11);
+    d = (d + 1) | 0;
+    t = (t + d) | 0;
+    c = (c + t) | 0;
+    return (t >>> 0) / 4294967296;
+  };
+}
+function rngFromSeed(seed){
+  const s = xmur3(seed);
+  const r = sfc32(s(), s(), s(), s());
+  for (let i = 0; i < 12; i++) r();     // warm up
+  return r;
+}
+
+function normSeed(s){ return String(s).trim().toUpperCase(); }
+
+function splitTeams(names, mode, k, seedRaw){
+  const sorted = names.slice().sort();             // order of typing does not matter
+  const rng = rngFromSeed(normSeed(seedRaw));
+  for (let i = sorted.length - 1; i > 0; i--){
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = sorted[i]; sorted[i] = sorted[j]; sorted[j] = tmp;
+  }
+  const n = sorted.length;
+  const teamCount = mode === 'teams' ? k : Math.ceil(n / k);
+  const teams = Array.from({ length: teamCount }, () => []);
+  sorted.forEach((name, idx) => teams[idx % teamCount].push(name));
+  return teams;
+}
+
+// ---------- secure random code ----------
+function randInt(max){
+  const limit = Math.floor(0x100000000 / max) * max;
+  const buf = new Uint32Array(1);
+  let x;
+  do { crypto.getRandomValues(buf); x = buf[0]; } while (x >= limit);
+  return x % max;
+}
+function newCode(){
+  let s = '';
+  for (let i = 0; i < 8; i++){
+    if (i === 4) s += '-';
+    s += CODE_ALPHABET[randInt(CODE_ALPHABET.length)];
+  }
+  return s;
+}
+
+// ---------- helpers ----------
+function parseNames(text){
+  return text.split('\n').map(s => s.trim().replace(/\s+/g, ' ').slice(0, MAX_LEN)).filter(Boolean).slice(0, MAX_NAMES);
+}
+function getMode(){ return document.querySelector('input[name="mode"]:checked').value; }
+function updateCount(){
+  const n = namesEl.value.split('\n').map(s => s.trim()).filter(Boolean).length;
+  countLabel.textContent = n + (n === 1 ? ' person' : ' people') + (n > MAX_NAMES ? ' (only the first 200 are used)' : '');
+}
+function flash(msg, bad){
+  statusEl.textContent = msg;
+  statusEl.className = 'status' + (bad ? ' bad' : '');
+}
+
+function validate(names, mode, k){
+  if (names.length < 2) return 'Please enter at least 2 names.';
+  if (!Number.isInteger(k) || k < 1) return 'Please enter a whole number of 1 or more.';
+  if (mode === 'teams'){
+    if (k < 2) return 'Choose at least 2 teams.';
+    if (k > names.length) return 'You asked for more teams than there are people.';
+  } else {
+    if (Math.ceil(names.length / k) < 2) return 'Team size must be smaller than the number of people.';
+  }
+  return '';
+}
+
+function render(){
+  const c = current;
+  teamsEl.textContent = '';
+  c.teams.forEach((members, i) => {
+    const card = document.createElement('div');
+    card.className = 'team';
+    card.style.borderTopColor = COLORS[i % COLORS.length];
+    const h = document.createElement('h4');
+    h.textContent = c.prefix + ' ' + (i + 1) + ' ';
+    const sp = document.createElement('span');
+    sp.textContent = '(' + members.length + ')';
+    h.appendChild(sp);
+    card.appendChild(h);
+    const ul = document.createElement('ul');
+    members.slice().sort((a, b) => a.localeCompare(b)).forEach(m => {
+      const li = document.createElement('li');
+      li.textContent = m;
+      ul.appendChild(li);
+    });
+    card.appendChild(ul);
+    teamsEl.appendChild(card);
+  });
+  resultTitle.textContent = c.teams.length + ' teams · draw code ' + c.seed;
+  resultArea.style.display = 'block';
+}
+
+function run(){
+  errorEl.textContent = '';
+  flash('');
+  const names = parseNames(namesEl.value);
+  const mode = getMode();
+  const k = parseInt(kEl.value, 10);
+  const prefix = (prefixEl.value.trim() || 'Team').slice(0, 20);
+  let seed = normSeed(seedEl.value);
+  if (!seed){ seed = newCode(); }
+  seedEl.value = seed;
+
+  const err = validate(names, mode, k);
+  if (err){ errorEl.textContent = err; resultArea.style.display = 'none'; return false; }
+
+  current = { names, mode, k, seed, prefix, teams: splitTeams(names, mode, k, seed) };
+  render();
+  return true;
+}
+
+// ---------- sharing ----------
+function encodePayload(obj){
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  let bin = '';
+  bytes.forEach(b => { bin += String.fromCharCode(b); });
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decodePayload(s){
+  s = s.replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) s += '=';
+  const bin = atob(s);
+  const bytes = Uint8Array.from(bin, ch => ch.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+function makeLink(){
+  const c = current;
+  const payload = { v: 1, l: c.names, m: c.mode, k: c.k, s: c.seed, p: c.prefix };
+  return location.href.split('#')[0] + '#t=' + encodePayload(payload);
+}
+function validPayload(p){
+  return p && p.v === 1 && Array.isArray(p.l) && p.l.length <= MAX_NAMES &&
+    p.l.every(x => typeof x === 'string' && x.length <= MAX_LEN) &&
+    (p.m === 'teams' || p.m === 'size') && Number.isInteger(p.k) && p.k >= 1 && p.k <= MAX_NAMES &&
+    typeof p.s === 'string' && p.s.length <= 40 && typeof p.p === 'string' && p.p.length <= 20;
+}
+
+function teamsAsText(){
+  const c = current;
+  const lines = [c.teams.length + ' teams · draw code ' + c.seed, ''];
+  c.teams.forEach((members, i) => {
+    lines.push(c.prefix + ' ' + (i + 1) + ': ' + members.slice().sort((a, b) => a.localeCompare(b)).join(', '));
+  });
+  lines.push('', 'Check the draw: ' + makeLink());
+  return lines.join('\n');
+}
+
+async function copyText(text, okMsg){
+  try {
+    await navigator.clipboard.writeText(text);
+    flash(okMsg);
+  } catch (e) {
+    flash('Could not copy automatically. Please select and copy the text manually.', true);
+  }
+}
+function csvCell(v){
+  let s = String(v);
+  if (/^[=+\-@]/.test(s)) s = "'" + s;
+  return '"' + s.replace(/"/g, '""') + '"';
+}
+function downloadCsv(){
+  const c = current;
+  const rows = [['Team', 'Name']];
+  c.teams.forEach((members, i) => members.slice().sort((a, b) => a.localeCompare(b)).forEach(m => rows.push([c.prefix + ' ' + (i + 1), m])));
+  const csv = rows.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'teams-' + c.seed + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  flash('CSV downloaded.');
+}
+
+// ---------- events ----------
+function syncModeLabel(){
+  kLabel.textContent = getMode() === 'teams' ? 'Number of teams' : 'People per team';
+}
+document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener('change', syncModeLabel));
+namesEl.addEventListener('input', updateCount);
+document.getElementById('splitBtn').addEventListener('click', run);
+document.getElementById('newCodeBtn').addEventListener('click', () => { seedEl.value = newCode(); });
+document.getElementById('redrawBtn').addEventListener('click', () => { seedEl.value = newCode(); banner.style.display = 'none'; run(); });
+document.getElementById('copyTextBtn').addEventListener('click', () => { if (current) copyText(teamsAsText(), 'Copied. Paste it into your chat or email.'); });
+document.getElementById('copyLinkBtn').addEventListener('click', () => { if (current) copyText(makeLink(), 'Verification link copied.'); });
+document.getElementById('csvBtn').addEventListener('click', () => { if (current) downloadCsv(); });
+
+function loadFromHash(){
+  const m = location.hash.match(/^#t=([A-Za-z0-9_-]+)$/);
+  if (!m) return false;
+  try {
+    const p = decodePayload(m[1]);
+    if (!validPayload(p)) return false;
+    namesEl.value = p.l.join('\n');
+    document.querySelector('input[name="mode"][value="' + p.m + '"]').checked = true;
+    kEl.value = p.k;
+    prefixEl.value = p.p;
+    seedEl.value = p.s;
+    syncModeLabel();
+    updateCount();
+    if (!run()) return false;
+    banner.textContent = 'Verification view: these teams were rebuilt on your device from the shared names and draw code ' + current.seed +
+      '. If they match what you were sent, no name or draw was changed.';
+    banner.style.display = 'block';
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+window.addEventListener('hashchange', loadFromHash);
+
+// ---------- start ----------
+seedEl.value = newCode();
+namesEl.value = ['Aarav', 'Priya', 'Chen', 'Maria', 'Omar', 'Sofia', 'Kenji', 'Fatima', 'Liam', 'Nia'].join('\n');
+updateCount();
+syncModeLabel();
+loadFromHash();
+</script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spin the Wheel – Random Name Picker Wheel | EJD Tech</title>
+<meta name="description" content="Free spin the wheel: add names or options, spin, and let a fair random wheel pick the winner. Remove winners after each spin. No sign-up, nothing stored.">
+<link rel="canonical" href="https://ejdtech.in/fun/spin-the-wheel.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EJD Tech">
+<meta property="og:title" content="Spin the Wheel – Random Name Picker Wheel | EJD Tech">
+<meta property="og:description" content="Free spin the wheel: add names or options, spin, and let a fair random wheel pick the winner. Remove winners after each spin. No sign-up, nothing stored.">
+<meta property="og:url" content="https://ejdtech.in/fun/spin-the-wheel.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .tool-page.wide{max-width:900px;}
+  .wheel-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+  @media(max-width:760px){.wheel-layout{grid-template-columns:1fr;}}
+  .wheel-wrap{text-align:center;}
+  #wheel{display:block;margin:0 auto;width:100%;max-width:380px;height:auto;cursor:pointer;}
+  #entries{
+    width:100%;min-height:230px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-size:14px;font-family:inherit;line-height:1.5;resize:vertical;
+  }
+  .meta-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin:6px 0 12px 0;}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .chip{
+    background:#eef2f9;border:1px solid var(--border);border-radius:999px;padding:5px 12px;
+    font-size:12px;font-weight:600;color:var(--text);cursor:pointer;
+  }
+  .chip:hover{background:#e0e7f5;}
+  .btn.secondary{background:#475569;}
+  .btn:disabled,.chip:disabled{opacity:.55;cursor:not-allowed;}
+  .check{display:flex;gap:8px;align-items:center;font-size:14px;margin:12px 0;}
+  .check input{width:auto;}
+  .winner-box{
+    margin-top:16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px;text-align:center;
+    min-height:76px;
+  }
+  .winner-box .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+  .winner-box .name{font-size:26px;font-weight:800;color:var(--blue);word-break:break-word;margin-top:4px;}
+  .winner-box .name.pop{animation:pop .45s ease;}
+  @keyframes pop{0%{transform:scale(.6);opacity:0;}70%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+  @media(prefers-reduced-motion:reduce){.winner-box .name.pop{animation:none;}}
+  .history{margin:10px 0 0 0;padding-left:20px;font-size:14px;}
+  .history li{padding:2px 0;}
+  h3.sub{font-size:16px;margin:20px 0 6px 0;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <div><h1>EJD Tech</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools">Tools</a>
+    <a href="../fun.html" class="active">Office Fun</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page wide">
+  <a class="back-link" href="../fun.html">&larr; Back to Office Fun</a>
+  <h2>Spin the Wheel</h2>
+  <p class="desc">Type your names or options, spin the wheel and let it pick. Perfect for choosing who presents first, who buys lunch, or who wins a small prize. Everything stays in your browser and nothing is saved.</p>
+
+  <div class="tool-box">
+    <div class="wheel-layout">
+      <div class="wheel-wrap">
+        <canvas id="wheel" aria-label="Spinning wheel"></canvas>
+        <div class="btn-row" style="justify-content:center;margin-top:14px;">
+          <button class="btn" id="spinBtn" type="button">Spin the wheel</button>
+        </div>
+      </div>
+
+      <div>
+        <label for="entries" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;">Entries (one per line)</label>
+        <textarea id="entries" spellcheck="false"></textarea>
+        <div class="meta-row"><span id="countLabel">0 entries</span><span>Max 60. Add a name twice for two chances.</span></div>
+
+        <div class="chips">
+          <button class="chip" type="button" data-preset="yesno">Yes / No</button>
+          <button class="chip" type="button" data-preset="lunch">Lunch ideas</button>
+          <button class="chip" type="button" data-preset="numbers">Numbers 1-10</button>
+          <button class="chip" type="button" data-preset="team">Sample team</button>
+        </div>
+
+        <label class="check"><input type="checkbox" id="removeWinner"> Remove the winner from the list after each spin</label>
+
+        <div class="btn-row">
+          <button class="btn secondary" id="shuffleBtn" type="button">Shuffle order</button>
+          <button class="btn secondary" id="clearBtn" type="button">Clear list</button>
+        </div>
+        <div class="error" id="error"></div>
+      </div>
+    </div>
+
+    <div class="winner-box" aria-live="polite">
+      <div class="lbl">Winner</div>
+      <div class="name" id="winnerName">Spin to pick</div>
+    </div>
+
+    <div id="historyBox" style="display:none;">
+      <h3 class="sub">Previous results</h3>
+      <ol class="history" id="history"></ol>
+      <button class="chip" id="clearHistoryBtn" type="button" style="margin-top:8px;">Clear results</button>
+    </div>
+  </div>
+
+<section class="about-tool">
+  <h3>About the Spin the Wheel tool</h3>
+  <p>Spin the Wheel is a free random name picker. You add names or options, one per line, and the wheel picks one of them at random. It needs no sign-up and no installation, and your list is never sent or saved.</p>
+
+  <h4>Ways to use it</h4>
+  <p>Pick who goes first in a stand-up, choose a presenter for the next meeting, decide where the team eats lunch, draw a winner for a small giveaway, pick a student to answer, or settle any "who will do it" question fairly.</p>
+
+  <h4>How to use it</h4>
+  <p>Type or paste your entries, one per line, or tap one of the quick lists. Click <strong>Spin the wheel</strong> (or click the wheel itself). Tick <strong>Remove the winner</strong> if you want to draw several different people in turn, for example for first, second and third prize.</p>
+
+  <h4>How the choice is made</h4>
+  <p>The winner is chosen first, using your browser's secure random number generator (<code>crypto.getRandomValues</code>) with no bias. The animation then slows down and stops on that winner. Every entry has the same chance, and a name entered twice has twice the chance.</p>
+
+  <h3>Frequently asked questions</h3>
+  <h4>Is the wheel really random?</h4>
+  <p>Yes. Each spin is an independent random choice. Earlier results do not change the next one, so the same name can win twice in a row unless you remove winners.</p>
+  <h4>How many entries can I add?</h4>
+  <p>Up to 60. Beyond that the labels become too small to read.</p>
+  <h4>Can I give some entries a better chance?</h4>
+  <p>Yes. Add the entry more than once. Two lines with the same name double its chances.</p>
+  <h4>Are my names stored anywhere?</h4>
+  <p>No. EJD Tech has no server-side code or database. The list exists only in the open page and disappears when you close or refresh it.</p>
+  <h4>Does it work on a phone?</h4>
+  <p>Yes. The wheel resizes to fit the screen, and you can tap it to spin.</p>
+  <div class="related"><strong>More:</strong> <a href="../fun.html">Office Fun</a><a href="team-splitter.html">Random Team Splitter</a><a href="../tools/password-generator.html">Password Generator</a></div>
+</section>
+</div>
+
+<footer class="site-footer">
+  <div><strong>EJD Tech</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a><a href="../fun.html">Office Fun</a></div>
+</footer>
+
+<script>
+const PALETTE = ['#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2','#db2777','#4d7c0f','#475569','#ea580c'];
+const MAX_ENTRIES = 60;
+const TWO_PI = Math.PI * 2;
+const SIZE = 380;
+
+const PRESETS = {
+  yesno:   ['Yes', 'No'],
+  lunch:   ['Pizza', 'Biryani', 'Sushi', 'Burgers', 'Salad', 'Noodles', 'Sandwiches', 'Tacos'],
+  numbers: ['1','2','3','4','5','6','7','8','9','10'],
+  team:    ['Aarav', 'Priya', 'Chen', 'Maria', 'Omar', 'Sofia', 'Kenji', 'Fatima']
+};
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const entriesEl = document.getElementById('entries');
+const spinBtn = document.getElementById('spinBtn');
+const shuffleBtn = document.getElementById('shuffleBtn');
+const clearBtn = document.getElementById('clearBtn');
+const removeEl = document.getElementById('removeWinner');
+const winnerEl = document.getElementById('winnerName');
+const errorEl = document.getElementById('error');
+const countLabel = document.getElementById('countLabel');
+const historyBox = document.getElementById('historyBox');
+const historyEl = document.getElementById('history');
+const controls = [spinBtn, shuffleBtn, clearBtn, entriesEl, removeEl,
+  ...document.querySelectorAll('.chip[data-preset]')];
+
+let rotation = 0;
+let spinning = false;
+let history = [];
+
+// --- secure, unbiased randomness ---
+function randInt(max){
+  const limit = Math.floor(0x100000000 / max) * max;
+  const buf = new Uint32Array(1);
+  let x;
+  do { crypto.getRandomValues(buf); x = buf[0]; } while (x >= limit);
+  return x % max;
+}
+function randFloat(){
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  return buf[0] / 0x100000000;
+}
+function norm(a){ return ((a % TWO_PI) + TWO_PI) % TWO_PI; }
+
+function setupCanvas(){
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = SIZE * dpr;
+  canvas.height = SIZE * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function getEntries(){
+  return entriesEl.value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, MAX_ENTRIES);
+}
+function rawCount(){
+  return entriesEl.value.split('\n').map(s => s.trim()).filter(Boolean).length;
+}
+
+function colorFor(i, n){
+  let idx = i % PALETTE.length;
+  if (i === n - 1 && idx === 0) idx = 4;   // avoid same colour as the first slice
+  return PALETTE[idx];
+}
+
+function fitLabel(text, maxW){
+  if (ctx.measureText(text).width <= maxW) return text;
+  let t = text;
+  while (t.length > 1 && ctx.measureText(t + '…').width > maxW) t = t.slice(0, -1);
+  return t + '…';
+}
+
+function draw(){
+  const entries = getEntries();
+  const n = entries.length;
+  const cx = SIZE / 2, cy = SIZE / 2, R = SIZE / 2 - 12;
+  ctx.clearRect(0, 0, SIZE, SIZE);
+
+  if (n < 2){
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, TWO_PI);
+    ctx.fillStyle = '#e2e8f0'; ctx.fill();
+    ctx.fillStyle = '#64748b';
+    ctx.font = '600 16px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Add at least 2 entries', cx, cy);
+  } else {
+    const seg = TWO_PI / n;
+    const fs = n <= 8 ? 18 : n <= 16 ? 15 : n <= 30 ? 12 : 10;
+    ctx.font = '600 ' + fs + 'px sans-serif';
+    for (let i = 0; i < n; i++){
+      const a0 = rotation + i * seg;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, a0, a0 + seg);
+      ctx.closePath();
+      ctx.fillStyle = colorFor(i, n);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(a0 + seg / 2);
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(fitLabel(entries[i], R * 0.64), R - 14, 0);
+      ctx.restore();
+    }
+  }
+
+  // hub
+  ctx.beginPath(); ctx.arc(cx, cy, 16, 0, TWO_PI);
+  ctx.fillStyle = '#ffffff'; ctx.fill();
+  ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2; ctx.stroke();
+
+  // pointer (top)
+  ctx.beginPath();
+  ctx.moveTo(cx - 14, 2); ctx.lineTo(cx + 14, 2); ctx.lineTo(cx, 32);
+  ctx.closePath();
+  ctx.fillStyle = '#0f172a'; ctx.fill();
+  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
+}
+
+function updateCount(){
+  const raw = rawCount();
+  countLabel.textContent = raw + (raw === 1 ? ' entry' : ' entries') + (raw > MAX_ENTRIES ? ' (only the first 60 are used)' : '');
+}
+
+function refresh(){ updateCount(); draw(); }
+
+function setBusy(b){
+  spinning = b;
+  controls.forEach(c => { c.disabled = b; });
+}
+
+function renderHistory(){
+  historyEl.textContent = '';
+  history.forEach(name => {
+    const li = document.createElement('li');
+    li.textContent = name;
+    historyEl.appendChild(li);
+  });
+  historyBox.style.display = history.length ? 'block' : 'none';
+}
+
+function showWinner(name){
+  winnerEl.textContent = name;
+  winnerEl.classList.remove('pop');
+  void winnerEl.offsetWidth;          // restart the animation
+  winnerEl.classList.add('pop');
+  history.unshift(name);
+  if (history.length > 15) history.pop();
+  renderHistory();
+}
+
+function spin(){
+  if (spinning) return;
+  errorEl.textContent = '';
+  const entries = getEntries();
+  const n = entries.length;
+  if (n < 2){
+    errorEl.textContent = 'Please add at least 2 entries.';
+    return;
+  }
+  const seg = TWO_PI / n;
+  const winnerIndex = randInt(n);                       // winner chosen first
+  const offset = (randFloat() - 0.5) * 0.8 * seg;       // land anywhere inside the slice, not only the centre
+  const target = norm(-Math.PI / 2 - (winnerIndex + 0.5) * seg - offset);
+  const turns = 5 + randInt(4);
+  const delta = norm(target - norm(rotation)) + turns * TWO_PI;
+  const startRot = rotation;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const duration = reduce ? 800 : 5000;
+  const t0 = performance.now();
+
+  setBusy(true);
+  winnerEl.textContent = '...';
+
+  function frame(now){
+    const t = Math.min(1, (now - t0) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);               // ease-out
+    rotation = startRot + delta * eased;
+    draw();
+    if (t < 1){
+      requestAnimationFrame(frame);
+    } else {
+      rotation = startRot + delta;
+      draw();
+      const name = entries[winnerIndex];
+      showWinner(name);
+      if (removeEl.checked){
+        const lines = entriesEl.value.split('\n');
+        const at = lines.findIndex(l => l.trim() === name);
+        if (at !== -1){ lines.splice(at, 1); entriesEl.value = lines.join('\n'); }
+      }
+      setBusy(false);
+      refresh();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+spinBtn.addEventListener('click', spin);
+canvas.addEventListener('click', spin);
+entriesEl.addEventListener('input', refresh);
+
+shuffleBtn.addEventListener('click', () => {
+  const a = getEntries();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = randInt(i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  entriesEl.value = a.join('\n');
+  refresh();
+});
+clearBtn.addEventListener('click', () => {
+  entriesEl.value = '';
+  winnerEl.textContent = 'Spin to pick';
+  refresh();
+});
+document.querySelectorAll('.chip[data-preset]').forEach(b => {
+  b.addEventListener('click', () => {
+    entriesEl.value = PRESETS[b.dataset.preset].join('\n');
+    winnerEl.textContent = 'Spin to pick';
+    refresh();
+  });
+});
+document.getElementById('clearHistoryBtn').addEventListener('click', () => { history = []; renderHistory(); });
+
+setupCanvas();
+entriesEl.value = PRESETS.team.join('\n');
+refresh();
+</script>
+</body>
+</html>
