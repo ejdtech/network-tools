@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Generator – URL, Wi-Fi, Email, Contact (PNG &amp; SVG) | EJD Tech</title>
+<meta name="description" content="Free QR code generator: make QR codes for links, text, Wi-Fi, email, phone numbers and contact cards. Download PNG or SVG. Created in your browser, nothing is stored.">
+<link rel="canonical" href="https://ejdtech.in/tools/qr-code-generator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EJD Tech">
+<meta property="og:title" content="QR Code Generator – URL, Wi-Fi, Email, Contact (PNG &amp; SVG) | EJD Tech">
+<meta property="og:description" content="Free QR code generator: make QR codes for links, text, Wi-Fi, email, phone numbers and contact cards. Download PNG or SVG. Created in your browser, nothing is stored.">
+<meta property="og:url" content="https://ejdtech.in/tools/qr-code-generator.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  .tool-page.wide{max-width:960px;}
+  .qr-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:start;}
+  @media(max-width:820px){.qr-layout{grid-template-columns:1fr;}}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .tab{
+    background:#eef2f9;border:1px solid var(--border);border-radius:999px;padding:7px 14px;
+    font-size:13px;font-weight:600;color:var(--text);cursor:pointer;
+  }
+  .tab[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  textarea.field-area{
+    width:100%;min-height:120px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;
+    font-size:14px;font-family:inherit;line-height:1.5;resize:vertical;
+  }
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:520px){.two{grid-template-columns:1fr;}}
+  .check{display:flex;gap:8px;align-items:center;font-size:14px;margin:4px 0 14px 0;}
+  .check input{width:auto;}
+  .opts{border-top:1px solid var(--border);margin-top:8px;padding-top:16px;}
+  .opts h3{font-size:14px;margin:0 0 12px 0;}
+  .color-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;}
+  .color-row .field{margin:0;}
+  .color-row input[type=color]{width:56px;height:38px;padding:2px;cursor:pointer;}
+  .chip{
+    background:#eef2f9;border:1px solid var(--border);border-radius:999px;padding:6px 12px;
+    font-size:12px;font-weight:600;color:var(--text);cursor:pointer;
+  }
+  .preview{text-align:center;position:sticky;top:16px;}
+  .preview-box{
+    background:#f8fafc;border:1px dashed #cbd5e1;border-radius:12px;padding:18px;min-height:260px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  #qrCanvas{max-width:100%;height:auto;display:none;image-rendering:pixelated;}
+  #emptyMsg{color:var(--muted);font-size:14px;}
+  .qr-info{font-size:12px;color:var(--muted);margin:10px 0 12px 0;min-height:16px;}
+  .btn.secondary{background:#475569;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .warn{font-size:12px;color:#b45309;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px;margin-bottom:10px;display:none;text-align:left;}
+  .status{font-size:13px;color:#16a34a;min-height:18px;margin-top:8px;}
+  .status.bad{color:#dc2626;}
+  .tm{font-size:12px;color:var(--muted);margin-top:18px;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">
+    <div><h1>EJD Tech</h1><p>Simple Tools for System Administrators</p></div>
+  </div>
+  <nav class="main-nav">
+    <a href="../index.html">Home</a>
+    <a href="../index.html#tools" class="active">Tools</a>
+    <a href="../fun.html">Office Fun</a>
+    <a href="../about.html">About</a>
+    <a href="../contact.html">Contact</a>
+  </nav>
+</header>
+
+<div class="tool-page wide">
+  <a class="back-link" href="../index.html">&larr; Back to all tools</a>
+  <h2>QR Code Generator</h2>
+  <p class="desc">Create a QR code for a link, text, Wi-Fi network, email, phone number or contact card, then download it as PNG or SVG. The code is made in your browser. Nothing you type is sent anywhere or stored.</p>
+
+  <div class="tool-box">
+    <div class="tabs" role="group" aria-label="QR code type">
+      <button class="tab" type="button" data-type="text" aria-pressed="true">Text / URL</button>
+      <button class="tab" type="button" data-type="wifi" aria-pressed="false">Wi-Fi</button>
+      <button class="tab" type="button" data-type="email" aria-pressed="false">Email</button>
+      <button class="tab" type="button" data-type="phone" aria-pressed="false">Phone</button>
+      <button class="tab" type="button" data-type="vcard" aria-pressed="false">Contact</button>
+    </div>
+
+    <div class="qr-layout">
+      <div>
+        <div class="panel active" id="panel-text">
+          <div class="field">
+            <label for="textInput">Text or link</label>
+            <textarea class="field-area" id="textInput" placeholder="https://example.com" spellcheck="false">https://ejdtech.in</textarea>
+            <p style="font-size:12px;color:var(--muted);margin:4px 0 0 0;">Start web addresses with https:// so phones open them as links.</p>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-wifi">
+          <div class="field"><label for="wifiSsid">Network name (SSID)</label><input type="text" id="wifiSsid" maxlength="32" autocomplete="off"></div>
+          <div class="two">
+            <div class="field"><label for="wifiSec">Security</label>
+              <select id="wifiSec"><option value="WPA">WPA / WPA2 / WPA3</option><option value="WEP">WEP</option><option value="nopass">No password</option></select>
+            </div>
+            <div class="field"><label for="wifiPass">Password</label><input type="text" id="wifiPass" maxlength="63" autocomplete="off"></div>
+          </div>
+          <label class="check"><input type="checkbox" id="wifiHidden"> Hidden network</label>
+          <div class="note-box" style="margin-top:0;">Anyone who can see or photograph this printed code can join the network. Treat it like the password itself.</div>
+        </div>
+
+        <div class="panel" id="panel-email">
+          <div class="field"><label for="mailTo">Email address</label><input type="text" id="mailTo" placeholder="name@example.com" autocomplete="off"></div>
+          <div class="field"><label for="mailSub">Subject (optional)</label><input type="text" id="mailSub" autocomplete="off"></div>
+          <div class="field"><label for="mailBody">Message (optional)</label><textarea class="field-area" id="mailBody" style="min-height:80px;"></textarea></div>
+        </div>
+
+        <div class="panel" id="panel-phone">
+          <div class="field"><label for="phoneNum">Phone number</label><input type="text" id="phoneNum" placeholder="+65 9123 4567" autocomplete="off"></div>
+          <p style="font-size:12px;color:var(--muted);margin:0;">Include the country code (for example +65 or +91) so it works from anywhere.</p>
+        </div>
+
+        <div class="panel" id="panel-vcard">
+          <div class="two">
+            <div class="field"><label for="vFirst">First name</label><input type="text" id="vFirst" autocomplete="off"></div>
+            <div class="field"><label for="vLast">Last name</label><input type="text" id="vLast" autocomplete="off"></div>
+          </div>
+          <div class="two">
+            <div class="field"><label for="vOrg">Company</label><input type="text" id="vOrg" autocomplete="off"></div>
+            <div class="field"><label for="vTitle">Job title</label><input type="text" id="vTitle" autocomplete="off"></div>
+          </div>
+          <div class="two">
+            <div class="field"><label for="vPhone">Phone</label><input type="text" id="vPhone" autocomplete="off"></div>
+            <div class="field"><label for="vEmail">Email</label><input type="text" id="vEmail" autocomplete="off"></div>
+          </div>
+          <div class="field"><label for="vUrl">Website</label><input type="text" id="vUrl" placeholder="https://" autocomplete="off"></div>
+        </div>
+
+        <div class="opts">
+          <h3>Options</h3>
+          <div class="two">
+            <div class="field"><label for="eccSel">Error correction</label>
+              <select id="eccSel">
+                <option value="0">Low (7%)</option>
+                <option value="1" selected>Medium (15%)</option>
+                <option value="2">Quartile (25%)</option>
+                <option value="3">High (30%)</option>
+              </select>
+            </div>
+            <div class="field"><label for="sizeSel">Image size (about)</label>
+              <select id="sizeSel">
+                <option value="256">256 px</option>
+                <option value="384">384 px</option>
+                <option value="512" selected>512 px</option>
+                <option value="768">768 px</option>
+                <option value="1024">1024 px</option>
+                <option value="2048">2048 px (print)</option>
+              </select>
+            </div>
+          </div>
+          <div class="color-row">
+            <div class="field"><label for="fgColor">Code colour</label><input type="color" id="fgColor" value="#000000"></div>
+            <div class="field"><label for="bgColor">Background</label><input type="color" id="bgColor" value="#ffffff"></div>
+            <div class="field"><label for="marginSel">Quiet zone</label>
+              <select id="marginSel"><option value="2">2 modules</option><option value="4" selected>4 modules</option><option value="6">6 modules</option></select>
+            </div>
+            <button class="chip" id="resetColors" type="button">Reset colours</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview">
+        <div class="preview-box" aria-live="polite">
+          <canvas id="qrCanvas" aria-label="Generated QR code"></canvas>
+          <div id="emptyMsg">Your QR code will appear here</div>
+        </div>
+        <div class="qr-info" id="qrInfo"></div>
+        <div class="warn" id="warnBox"></div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn" id="pngBtn" type="button" disabled>Download PNG</button>
+          <button class="btn secondary" id="svgBtn" type="button" disabled>Download SVG</button>
+          <button class="btn secondary" id="copyBtn" type="button" disabled>Copy image</button>
+        </div>
+        <div class="status" id="status" aria-live="polite"></div>
+        <div class="error" id="error"></div>
+      </div>
+    </div>
+  </div>
+
+<section class="about-tool">
+  <h3>About the QR Code Generator</h3>
+  <p>A QR code is a square barcode that a phone camera can read. This tool turns a link, a piece of text, Wi-Fi details, an email, a phone number or a contact card into a QR code you can download as a PNG image or a scalable SVG file. The code is generated in your browser by code that runs on this page. It does not use a third-party service, and what you type never leaves your device.</p>
+
+  <h4>Handy uses for sysadmins and offices</h4>
+  <p>Put a Wi-Fi QR code on the guest network sign so visitors can join without typing a password. Stick a code on a server rack or asset label that opens a documentation page or inventory record. Share a runbook, a status page or a ticket form on a poster. Print a contact card QR on a badge or handout.</p>
+
+  <h4>Tips for a code that scans every time</h4>
+  <p><strong>Keep strong contrast:</strong> dark code on a light background is the safest. Very light colours, or light code on a dark background, fail on some scanners. <strong>Keep the quiet zone:</strong> the empty border around the code should be at least 4 modules wide. <strong>Pick the error correction level:</strong> Medium suits most uses, and High lets the code survive scratches or a small logo but makes it denser. <strong>Test before printing:</strong> scan the final code with at least two phones, at the size it will be printed. <strong>Shorter is easier:</strong> less text gives a simpler code that scans faster from further away.</p>
+
+  <h4>Which format to download</h4>
+  <p>Use <strong>PNG</strong> for documents, slides and web pages. Use <strong>SVG</strong> for printing and signs, because it stays sharp at any size. For large prints you can also choose the 2048 px image size.</p>
+
+  <h3>Frequently asked questions</h3>
+  <h4>Does the QR code expire?</h4>
+  <p>No. The code holds your data directly, so it works as long as the destination (such as a web page) still exists. There is no redirect service in between, and nobody tracks the scans.</p>
+  <h4>Is it really free, and is my data private?</h4>
+  <p>Yes. It is free to use, and EJD Tech has no server-side code or database. Everything you enter stays in the open page and is gone when you close or refresh it.</p>
+  <h4>How do I make a Wi-Fi QR code?</h4>
+  <p>Open the Wi-Fi tab, enter the network name and password, choose the security type (WPA covers WPA2 and WPA3), and download the code. On most phones, scanning it with the camera offers to join the network.</p>
+  <h4>What is the maximum amount of text?</h4>
+  <p>It depends on the error correction level. At Low, about 2,950 characters of plain text; at High, about 1,270. In practice, keep it much shorter so the code stays easy to scan.</p>
+  <h4>Can I add a logo or change the colours?</h4>
+  <p>You can change the code and background colours. Logos are not added by this tool. If you place a logo over a code yourself, use High error correction and test it carefully.</p>
+  <div class="related"><strong>Related tools:</strong> <a href="password-generator.html">Password Generator</a><a href="public-ip.html">Find My Public IP</a><a href="dns-lookup.html">DNS Lookup</a><a href="../fun/spin-the-wheel.html">Spin the Wheel</a></div>
+  <p class="tm">QR Code is a registered trademark of DENSO WAVE INCORPORATED.</p>
+</section>
+</div>
+
+<footer class="site-footer">
+  <div><strong>EJD Tech</strong></div>
+  <div class="f-links"><a href="../index.html">Home</a><a href="../fun.html">Office Fun</a></div>
+</footer>
+
+<script>
+// QR Code encoder: byte mode, versions 1-40, error correction L/M/Q/H.
+// Written for EJD Tech following ISO/IEC 18004. No third-party code, runs entirely in the browser.
+const QR = (function () {
+  // index: 0 = L, 1 = M, 2 = Q, 3 = H ; entry 0 of each row is unused padding
+  const ECC_PER_BLOCK = [
+    [-1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
+    [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28],
+    [-1, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 26, 24, 20, 30, 24, 28, 28, 26, 30, 28, 30, 30, 30, 30, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
+    [-1, 17, 28, 22, 16, 22, 28, 26, 26, 24, 28, 24, 28, 22, 24, 24, 30, 28, 28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]
+  ];
+  const NUM_BLOCKS = [
+    [-1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25],
+    [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49],
+    [-1, 1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25, 27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68],
+    [-1, 1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30, 32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81]
+  ];
+  const FORMAT_BITS = [1, 0, 3, 2];
+
+  function getBit(x, i) { return ((x >>> i) & 1) !== 0; }
+
+  function numRawDataModules(ver) {
+    let r = (16 * ver + 128) * ver + 64;
+    if (ver >= 2) {
+      const n = Math.floor(ver / 7) + 2;
+      r -= (25 * n - 10) * n - 55;
+      if (ver >= 7) r -= 36;
+    }
+    return r;
+  }
+  function numDataCodewords(ver, ecl) {
+    return Math.floor(numRawDataModules(ver) / 8) - ECC_PER_BLOCK[ecl][ver] * NUM_BLOCKS[ecl][ver];
+  }
+  function capacityBytes(ver, ecl) {
+    const lenBits = ver <= 9 ? 8 : 16;
+    return Math.floor((numDataCodewords(ver, ecl) * 8 - 4 - lenBits) / 8);
+  }
+  function alignmentPositions(ver) {
+    if (ver === 1) return [];
+    const n = Math.floor(ver / 7) + 2;
+    const size = ver * 4 + 17;
+    const step = ver === 32 ? 26 : Math.ceil((ver * 4 + 4) / (n * 2 - 2)) * 2;
+    const res = [6];
+    for (let pos = size - 7; res.length < n; pos -= step) res.splice(1, 0, pos);
+    return res;
+  }
+
+  // --- Reed-Solomon over GF(256), polynomial 0x11D ---
+  function gfMul(x, y) {
+    let z = 0;
+    for (let i = 7; i >= 0; i--) {
+      z = (z << 1) ^ ((z >>> 7) * 0x11D);
+      z ^= ((y >>> i) & 1) * x;
+    }
+    return z;
+  }
+  function rsDivisor(degree) {
+    const res = new Array(degree).fill(0);
+    res[degree - 1] = 1;
+    let root = 1;
+    for (let i = 0; i < degree; i++) {
+      for (let j = 0; j < res.length; j++) {
+        res[j] = gfMul(res[j], root);
+        if (j + 1 < res.length) res[j] ^= res[j + 1];
+      }
+      root = gfMul(root, 0x02);
+    }
+    return res;
+  }
+  function rsRemainder(data, divisor) {
+    const res = divisor.map(() => 0);
+    for (const b of data) {
+      const factor = b ^ res.shift();
+      res.push(0);
+      divisor.forEach((coef, i) => { res[i] ^= gfMul(coef, factor); });
+    }
+    return res;
+  }
+  function addEccAndInterleave(data, ver, ecl) {
+    const numBlocks = NUM_BLOCKS[ecl][ver];
+    const blockEccLen = ECC_PER_BLOCK[ecl][ver];
+    const rawCodewords = Math.floor(numRawDataModules(ver) / 8);
+    const numShortBlocks = numBlocks - rawCodewords % numBlocks;
+    const shortBlockLen = Math.floor(rawCodewords / numBlocks);
+    const blocks = [];
+    const divisor = rsDivisor(blockEccLen);
+    for (let i = 0, k = 0; i < numBlocks; i++) {
+      const dat = data.slice(k, k + shortBlockLen - blockEccLen + (i < numShortBlocks ? 0 : 1));
+      k += dat.length;
+      const ecc = rsRemainder(dat, divisor);
+      if (i < numShortBlocks) dat.push(0);
+      blocks.push(dat.concat(ecc));
+    }
+    const result = [];
+    for (let i = 0; i < blocks[0].length; i++) {
+      blocks.forEach((block, j) => {
+        if (i !== shortBlockLen - blockEccLen || j >= numShortBlocks) result.push(block[i]);
+      });
+    }
+    return result;
+  }
+
+  // --- penalty score (ISO 18004 section 7.8.3) ---
+  function penalty(m, size) {
+    let total = 0;
+    const lines = [];
+    for (let y = 0; y < size; y++) lines.push(m[y].map(v => (v ? 1 : 0)));
+    for (let x = 0; x < size; x++) { const col = []; for (let y = 0; y < size; y++) col.push(m[y][x] ? 1 : 0); lines.push(col); }
+    // rule 1: runs of 5+ same-colour modules
+    for (const line of lines) {
+      let run = 1;
+      for (let i = 1; i <= size; i++) {
+        if (i < size && line[i] === line[i - 1]) { run++; }
+        else { if (run >= 5) total += 3 + (run - 5); run = 1; }
+      }
+    }
+    // rule 2: 2x2 blocks
+    for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++) {
+      const c = m[y][x];
+      if (c === m[y][x + 1] && c === m[y + 1][x] && c === m[y + 1][x + 1]) total += 3;
+    }
+    // rule 3: finder-like patterns
+    const P1 = [1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0], P2 = [0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1];
+    for (const line of lines) {
+      for (let i = 0; i + 11 <= size; i++) {
+        let a = true, b = true;
+        for (let k = 0; k < 11 && (a || b); k++) {
+          if (line[i + k] !== P1[k]) a = false;
+          if (line[i + k] !== P2[k]) b = false;
+        }
+        if (a) total += 40;
+        if (b) total += 40;
+      }
+    }
+    // rule 4: dark/light balance
+    let dark = 0;
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (m[y][x]) dark++;
+    const pct = dark * 100 / (size * size);
+    total += Math.floor(Math.abs(pct - 50) / 5) * 10;
+    return total;
+  }
+
+  function maskBit(mask, x, y) {
+    switch (mask) {
+      case 0: return (x + y) % 2 === 0;
+      case 1: return y % 2 === 0;
+      case 2: return x % 3 === 0;
+      case 3: return (x + y) % 3 === 0;
+      case 4: return (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0;
+      case 5: return x * y % 2 + x * y % 3 === 0;
+      case 6: return (x * y % 2 + x * y % 3) % 2 === 0;
+      default: return ((x + y) % 2 + x * y % 3) % 2 === 0;
+    }
+  }
+
+  // bytes: array of 0-255 ; ecl: 0=L 1=M 2=Q 3=H
+  function encode(bytes, ecl) {
+    let ver = 1;
+    while (ver <= 40 && bytes.length > capacityBytes(ver, ecl)) ver++;
+    if (ver > 40) throw new Error('too long');
+
+    // 1. data bits
+    const bits = [];
+    const push = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+    push(0x4, 4);
+    push(bytes.length, ver <= 9 ? 8 : 16);
+    bytes.forEach(b => push(b, 8));
+    const capBits = numDataCodewords(ver, ecl) * 8;
+    push(0, Math.min(4, capBits - bits.length));
+    push(0, (8 - bits.length % 8) % 8);
+    for (let pad = 0xEC; bits.length < capBits; pad ^= 0xEC ^ 0x11) push(pad, 8);
+    const data = new Array(bits.length / 8).fill(0);
+    bits.forEach((b, i) => { data[i >>> 3] |= b << (7 - (i & 7)); });
+    const codewords = addEccAndInterleave(data, ver, ecl);
+
+    // 2. function patterns
+    const size = ver * 4 + 17;
+    const modules = Array.from({ length: size }, () => new Array(size).fill(false));
+    const isFn = Array.from({ length: size }, () => new Array(size).fill(false));
+    const setFn = (x, y, dark) => { modules[y][x] = dark; isFn[y][x] = true; };
+
+    for (let i = 0; i < size; i++) { setFn(6, i, i % 2 === 0); setFn(i, 6, i % 2 === 0); }
+    const finder = (cx, cy) => {
+      for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+        const dist = Math.max(Math.abs(dx), Math.abs(dy));
+        const xx = cx + dx, yy = cy + dy;
+        if (xx >= 0 && xx < size && yy >= 0 && yy < size) setFn(xx, yy, dist !== 2 && dist !== 4);
+      }
+    };
+    finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+    const pos = alignmentPositions(ver);
+    const n = pos.length;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      if ((i === 0 && j === 0) || (i === 0 && j === n - 1) || (i === n - 1 && j === 0)) continue;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+        setFn(pos[i] + dx, pos[j] + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+      }
+    }
+    const drawFormat = (mask) => {
+      const d = (FORMAT_BITS[ecl] << 3) | mask;
+      let rem = d;
+      for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+      const bitsF = ((d << 10) | rem) ^ 0x5412;
+      for (let i = 0; i <= 5; i++) setFn(8, i, getBit(bitsF, i));
+      setFn(8, 7, getBit(bitsF, 6));
+      setFn(8, 8, getBit(bitsF, 7));
+      setFn(7, 8, getBit(bitsF, 8));
+      for (let i = 9; i < 15; i++) setFn(14 - i, 8, getBit(bitsF, i));
+      for (let i = 0; i < 8; i++) setFn(size - 1 - i, 8, getBit(bitsF, i));
+      for (let i = 8; i < 15; i++) setFn(8, size - 15 + i, getBit(bitsF, i));
+      setFn(8, size - 8, true);
+    };
+    drawFormat(0);   // reserves the format areas
+    if (ver >= 7) {
+      let rem = ver;
+      for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+      const vb = (ver << 12) | rem;
+      for (let i = 0; i < 18; i++) {
+        const c = getBit(vb, i), a = size - 11 + i % 3, b = Math.floor(i / 3);
+        setFn(a, b, c); setFn(b, a, c);
+      }
+    }
+
+    // 3. place codewords in the zigzag
+    let k = 0;
+    for (let right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (let vert = 0; vert < size; vert++) {
+        for (let j = 0; j < 2; j++) {
+          const x = right - j;
+          const upward = ((right + 1) & 2) === 0;
+          const y = upward ? size - 1 - vert : vert;
+          if (!isFn[y][x] && k < codewords.length * 8) {
+            modules[y][x] = getBit(codewords[k >>> 3], 7 - (k & 7));
+            k++;
+          }
+        }
+      }
+    }
+
+    // 4. choose the best mask
+    const applyMask = (mask) => {
+      for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+        if (!isFn[y][x] && maskBit(mask, x, y)) modules[y][x] = !modules[y][x];
+      }
+    };
+    let best = 0, bestScore = Infinity;
+    for (let mask = 0; mask < 8; mask++) {
+      applyMask(mask); drawFormat(mask);
+      const score = penalty(modules, size);
+      if (score < bestScore) { bestScore = score; best = mask; }
+      applyMask(mask);   // undo
+    }
+    applyMask(best); drawFormat(best);
+    return { version: ver, size: size, modules: modules, mask: best };
+  }
+
+  return { encode: encode, capacityBytes: capacityBytes };
+})();
+
+</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var canvas = $('qrCanvas'), ctx = canvas.getContext('2d');
+  var emptyMsg = $('emptyMsg'), qrInfo = $('qrInfo'), warnBox = $('warnBox');
+  var errorEl = $('error'), statusEl = $('status');
+  var pngBtn = $('pngBtn'), svgBtn = $('svgBtn'), copyBtn = $('copyBtn');
+  var activeType = 'text';
+  var current = null;   // { matrix, n, margin, fg, bg, moduleSize, px }
+
+  // ---------- payload builders ----------
+  function wifiEsc(s) { return s.replace(/([\\;,:"])/g, '\\$1'); }
+  function vEsc(s) { return s.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;'); }
+
+  function buildPayload() {
+    switch (activeType) {
+      case 'text':
+        return $('textInput').value.trim();
+      case 'wifi': {
+        var ssid = $('wifiSsid').value;
+        if (!ssid) return '';
+        var sec = $('wifiSec').value;
+        var s = 'WIFI:T:' + sec + ';S:' + wifiEsc(ssid) + ';';
+        if (sec !== 'nopass') s += 'P:' + wifiEsc($('wifiPass').value) + ';';
+        if ($('wifiHidden').checked) s += 'H:true;';
+        return s + ';';
+      }
+      case 'email': {
+        var to = $('mailTo').value.trim();
+        if (!to) return '';
+        var params = [];
+        var sub = $('mailSub').value, body = $('mailBody').value;
+        if (sub) params.push('subject=' + encodeURIComponent(sub));
+        if (body) params.push('body=' + encodeURIComponent(body));
+        return 'mailto:' + to + (params.length ? '?' + params.join('&') : '');
+      }
+      case 'phone': {
+        var num = $('phoneNum').value.replace(/[^\d+]/g, '');
+        return /\d/.test(num) ? 'tel:' + num : '';
+      }
+      case 'vcard': {
+        var first = $('vFirst').value.trim(), last = $('vLast').value.trim();
+        var org = $('vOrg').value.trim(), title = $('vTitle').value.trim();
+        var tel = $('vPhone').value.trim(), mail = $('vEmail').value.trim(), url = $('vUrl').value.trim();
+        if (!(first || last || org)) return '';
+        var lines = ['BEGIN:VCARD', 'VERSION:3.0',
+          'N:' + vEsc(last) + ';' + vEsc(first) + ';;;',
+          'FN:' + vEsc((first + ' ' + last).trim() || org)];
+        if (org) lines.push('ORG:' + vEsc(org));
+        if (title) lines.push('TITLE:' + vEsc(title));
+        if (tel) lines.push('TEL:' + vEsc(tel));
+        if (mail) lines.push('EMAIL:' + vEsc(mail));
+        if (url) lines.push('URL:' + vEsc(url));
+        lines.push('END:VCARD');
+        return lines.join('\r\n');
+      }
+    }
+    return '';
+  }
+
+  // ---------- colour helpers ----------
+  function lum(hex) {
+    var c = [1, 3, 5].map(function (i) {
+      var v = parseInt(hex.substr(i, 2), 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+
+  // ---------- render ----------
+  function setButtons(on) { pngBtn.disabled = svgBtn.disabled = copyBtn.disabled = !on; }
+
+  function clearPreview(msg) {
+    current = null;
+    canvas.style.display = 'none';
+    emptyMsg.style.display = 'block';
+    emptyMsg.textContent = msg || 'Your QR code will appear here';
+    qrInfo.textContent = '';
+    warnBox.style.display = 'none';
+    setButtons(false);
+  }
+
+  function render() {
+    errorEl.textContent = '';
+    statusEl.textContent = '';
+    var payload = buildPayload();
+    if (!payload) { clearPreview(); return; }
+
+    var ecl = parseInt($('eccSel').value, 10);
+    var bytes = Array.from(new TextEncoder().encode(payload));
+    var result;
+    try {
+      result = QR.encode(bytes, ecl);
+    } catch (e) {
+      clearPreview('Too much data for one QR code');
+      errorEl.textContent = 'That is too long for a QR code at this error correction level (maximum ' +
+        QR.capacityBytes(40, ecl) + ' bytes). Shorten the text or choose a lower level.';
+      return;
+    }
+
+    var n = result.size;
+    var margin = parseInt($('marginSel').value, 10);
+    var target = parseInt($('sizeSel').value, 10);
+    var moduleSize = Math.max(1, Math.floor(target / (n + 2 * margin)));
+    var px = moduleSize * (n + 2 * margin);
+    var fg = $('fgColor').value, bg = $('bgColor').value;
+
+    canvas.width = px; canvas.height = px;
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, px, px);
+    ctx.fillStyle = fg;
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      if (result.modules[y][x]) ctx.fillRect((x + margin) * moduleSize, (y + margin) * moduleSize, moduleSize, moduleSize);
+    }
+    canvas.style.display = 'block';
+    canvas.style.width = Math.min(px, 320) + 'px';
+    emptyMsg.style.display = 'none';
+
+    current = { matrix: result.modules, n: n, margin: margin, fg: fg, bg: bg, moduleSize: moduleSize, px: px };
+    qrInfo.textContent = 'Version ' + result.version + ' · ' + n + '×' + n + ' modules · ' + bytes.length + ' bytes · PNG ' + px + '×' + px + ' px';
+    setButtons(true);
+
+    // warnings
+    var l1 = lum(fg), l2 = lum(bg);
+    var ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+    var msgs = [];
+    if (ratio < 3) msgs.push('Low contrast between the code and background. It may not scan.');
+    else if (l1 > l2) msgs.push('Light code on a dark background does not scan on some readers. Dark on light is safer.');
+    if (margin < 4) msgs.push('A quiet zone under 4 modules can make scanning less reliable.');
+    if (msgs.length) { warnBox.textContent = msgs.join(' '); warnBox.style.display = 'block'; }
+    else warnBox.style.display = 'none';
+  }
+
+  // ---------- downloads ----------
+  function flash(msg, bad) { statusEl.textContent = msg; statusEl.className = 'status' + (bad ? ' bad' : ''); }
+
+  function saveBlob(blob, name) {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+  }
+
+  pngBtn.addEventListener('click', function () {
+    if (!current) return;
+    canvas.toBlob(function (b) { if (b) { saveBlob(b, 'qr-code.png'); flash('PNG downloaded.'); } }, 'image/png');
+  });
+
+  function makeSvg() {
+    var c = current, total = c.n + 2 * c.margin, d = '';
+    for (var y = 0; y < c.n; y++) {
+      var x = 0;
+      while (x < c.n) {
+        if (c.matrix[y][x]) {
+          var start = x;
+          while (x < c.n && c.matrix[y][x]) x++;
+          d += 'M' + (start + c.margin) + ',' + (y + c.margin) + 'h' + (x - start) + 'v1h-' + (x - start) + 'z';
+        } else x++;
+      }
+    }
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + total + ' ' + total + '" width="' + (total * 10) + '" height="' + (total * 10) + '" shape-rendering="crispEdges">' +
+      '<rect width="' + total + '" height="' + total + '" fill="' + c.bg + '"/>' +
+      '<path d="' + d + '" fill="' + c.fg + '"/></svg>';
+  }
+  svgBtn.addEventListener('click', function () {
+    if (!current) return;
+    saveBlob(new Blob([makeSvg()], { type: 'image/svg+xml' }), 'qr-code.svg');
+    flash('SVG downloaded.');
+  });
+
+  copyBtn.addEventListener('click', function () {
+    if (!current) return;
+    canvas.toBlob(function (b) {
+      if (!b) return;
+      try {
+        navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]).then(
+          function () { flash('Image copied. You can paste it into a document or chat.'); },
+          function () { flash('Could not copy. Use Download PNG instead.', true); });
+      } catch (e) { flash('Copy is not supported in this browser. Use Download PNG instead.', true); }
+    }, 'image/png');
+  });
+
+  // ---------- events ----------
+  var timer = null;
+  function schedule() { clearTimeout(timer); timer = setTimeout(render, 120); }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) {
+    t.addEventListener('click', function () {
+      activeType = t.getAttribute('data-type');
+      Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (x) {
+        x.setAttribute('aria-pressed', x === t ? 'true' : 'false');
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('.panel'), function (p) {
+        p.classList.toggle('active', p.id === 'panel-' + activeType);
+      });
+      render();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('input, textarea, select'), function (el) {
+    el.addEventListener('input', schedule);
+    el.addEventListener('change', schedule);
+  });
+  $('resetColors').addEventListener('click', function () {
+    $('fgColor').value = '#000000'; $('bgColor').value = '#ffffff'; render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
