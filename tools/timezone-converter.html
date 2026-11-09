@@ -13,20 +13,21 @@
 <meta property="og:url" content="https://ejdtech.in/tools/timezone-converter.html">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="../css/style.css">
+<script src="../js/theme.js"></script>
 <style>
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   @media(max-width:520px){.two-col{grid-template-columns:1fr;}}
   .section-gap{margin-top:24px;}
   .big-result{
-    background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px;margin-top:18px;
+    background:var(--highlight-bg);border:1px solid var(--highlight-border);border-radius:10px;padding:16px;margin-top:18px;
   }
-  .big-result .t{font-size:24px;font-weight:700;color:var(--blue);}
+  .big-result .t{font-size:24px;font-weight:700;color:var(--link);}
   .big-result .s{font-size:13px;color:var(--muted);margin-top:4px;}
   .zone-table{width:100%;border-collapse:collapse;font-size:14px;}
   .zone-table th,.zone-table td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--border);}
   .zone-table th{color:var(--muted);font-weight:600;font-size:12px;}
   .zone-table td.mono{font-family:ui-monospace,Menlo,Consolas,monospace;}
-  .zone-table tr.hl td{background:#eff6ff;font-weight:600;}
+  .zone-table tr.hl td{background:var(--highlight-bg);font-weight:600;}
   .table-wrap{overflow-x:auto;}
   h3.sub{font-size:17px;margin:0 0 12px 0;}
 </style>
@@ -42,6 +43,11 @@
     <a href="../fun.html">Office Fun</a>
     <a href="../about.html">About</a>
     <a href="../contact.html">Contact</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Theme: Auto (follows your device). Click to change." title="Theme: Auto (follows your device). Click to change.">
+      <svg class="i-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+      <svg class="i-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="i-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
   </nav>
 </header>
 
@@ -125,7 +131,7 @@
   <p>Yes, for the zones that use it (UK, Central Europe, the US zones and Australia East), using your browser's built-in time zone database.</p>
   <h4>Is my data stored?</h4>
   <p>No. All conversions happen in your browser and nothing is sent or saved.</p>
-  <div class="related"><strong>Related tools:</strong> <a href="public-ip.html">Find My Public IP</a><a href="subnet-calculator.html">Subnet Calculator</a><a href="password-generator.html">Password Generator</a><a href="dns-lookup.html">DNS Lookup</a><a href="qr-code-generator.html">QR Code Generator</a></div>
+  <div class="related"><strong>Related tools:</strong> <a href="public-ip.html">Find My Public IP</a><a href="subnet-calculator.html">Subnet Calculator</a><a href="password-generator.html">Password Generator</a><a href="dns-lookup.html">DNS Lookup</a><a href="qr-code-generator.html">QR Code Generator</a><a href="port-number-reference.html">Port Number Reference</a></div>
 </section>
 
 </div>
