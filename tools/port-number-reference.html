@@ -44,6 +44,7 @@
   table.ports .proto{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;white-space:nowrap;}
   table.ports .svc{font-weight:600;}
   table.ports .cat{font-size:12px;color:var(--muted);}
+  .soft{display:block;margin-top:4px;font-size:12px;color:var(--muted);}
   .tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:middle;}
   .tag.conv{background:var(--soft-bg);color:var(--muted);border:1px solid var(--border);}
   .note{display:block;margin-top:5px;font-size:12px;color:var(--warn-text);background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:8px;padding:5px 8px;}
@@ -74,11 +75,11 @@
 <div class="tool-page wide">
   <a class="back-link" href="../index.html">&larr; Back to all tools</a>
   <h2>Port Number Reference</h2>
-  <p class="desc">Search common TCP and UDP port numbers and the services that use them. Type a port (<strong>443</strong>), a name (<strong>ssh</strong>), a keyword (<strong>database</strong>), a range (<strong>8000-9000</strong>) or a list (<strong>22,80,443</strong>). The list is built into this page, so nothing you type is sent anywhere.</p>
+  <p class="desc">Search common TCP and UDP port numbers and the services that use them. Type a port (<strong>443</strong>), a service or software name (<strong>ssh</strong>, <strong>postfix</strong>, <strong>nginx</strong>), a keyword (<strong>database</strong>), a range (<strong>8000-9000</strong>) or a list (<strong>22,80,443</strong>). The list is built into this page, so nothing you type is sent anywhere.</p>
 
   <div class="tool-box">
     <label class="sr" for="q">Search ports</label>
-    <input class="search-input" id="q" type="search" placeholder="Search by port, service or keyword, e.g. 3389, ssh, database" autocomplete="off" spellcheck="false">
+    <input class="search-input" id="q" type="search" placeholder="Search by port, service or software, e.g. 3389, ssh, postfix, database" autocomplete="off" spellcheck="false">
 
     <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
 
@@ -123,10 +124,16 @@
   <h4>Checking ports on your own systems</h4>
   <p>On Linux, <code>ss -tulpn</code> lists listening TCP and UDP ports with their processes (run it as root to see all process names). On Windows, <code>netstat -ano</code> shows ports with process IDs, and PowerShell's <code>Get-NetTCPConnection -State Listen</code> lists listeners. To test whether a remote port is reachable, use <code>nc -zv host 443</code> on Linux or macOS, or <code>Test-NetConnection host -Port 443</code> in PowerShell.</p>
 
+  <h4>Postfix and other mail servers</h4>
+  <p>Postfix does not have a port of its own. It uses the standard email ports. By default it listens only on <strong>port 25</strong> (SMTP) for mail from other servers. Port <strong>587</strong> (submission, for mail clients) and port <strong>465</strong> (smtps, implicit TLS) are switched on by enabling the <code>submission</code> and <code>smtps</code> services in <code>/etc/postfix/master.cf</code>. Postfix can also hand mail to a mailbox server over LMTP, and its built-in default for that is port 24. Mail clients then read their mail from Dovecot or a similar server on <strong>143 or 993</strong> (IMAP) or <strong>110 or 995</strong> (POP3). If you filter mail with Amavis, Postfix passes it to Amavis on <strong>10024</strong> and takes it back on <strong>10025</strong>, which are common conventions you set yourself.</p>
+  <p>To see what your own Postfix server listens on, run <code>ss -ltnp | grep master</code> (the listening process is shown as <code>master</code>), or <code>postconf -M | grep smtpd</code> to list the services defined in master.cf.</p>
+
   <h4>Security tips</h4>
   <p>Close services you do not use, and allow only the ports you need through the firewall. Do not expose Remote Desktop (3389), SMB (445), database ports or management interfaces directly to the internet. Use a VPN or a gateway instead. Prefer the encrypted version of a service: SSH instead of Telnet, SFTP or FTPS instead of FTP, IMAPS instead of IMAP, and SNMPv3 instead of SNMP v1 or v2c. Keep in mind IANA's own warning that traffic on a registered port does not prove it is the assigned service or that it is legitimate, so judge traffic by what you actually know about it.</p>
 
   <h3>Frequently asked questions</h3>
+  <h4>Which ports does Postfix use?</h4>
+  <p>25 by default, plus 587 and 465 if you enable the submission and smtps services in master.cf. Search "postfix" above to see them together with the ports of the services it is usually paired with.</p>
   <h4>Does ping use a port?</h4>
   <p>No. Ping uses ICMP, which sits below TCP and UDP and has no port numbers. That is why a server can answer ping while a particular port is closed, and the other way round.</p>
   <h4>Can a service run on a different port?</h4>
@@ -165,45 +172,45 @@ var CATEGORIES=[C_WEB,C_MAIL,C_REM,C_FILE,C_DB,C_AUTH,C_DNS,C_WIN,C_MON,C_NET,C_
 var DATA=[
  [20,'TCP','FTP (data)','File transfer data channel (active mode)',C_FILE,false,'FTP is unencrypted. Prefer SFTP (port 22) or FTPS (989/990).'],
  [21,'TCP','FTP (control)','File transfer commands and login',C_FILE,false,'FTP sends passwords and data unencrypted. Prefer SFTP (port 22) or FTPS (989/990).'],
- [22,'TCP','SSH','Secure remote login, plus SFTP and SCP file transfer and tunnelling',C_REM,false,''],
+ [22,'TCP','SSH','Secure remote login, plus SFTP and SCP file transfer and tunnelling',C_REM,false,'','OpenSSH'],
  [23,'TCP','Telnet','Remote terminal in plain text',C_REM,false,'Everything, including passwords, is sent unencrypted. Use SSH instead.'],
- [25,'TCP','SMTP','Email delivery between mail servers. Many ISPs block outbound port 25 on home connections',C_MAIL,false,''],
+ [25,'TCP','SMTP','Email delivery between mail servers (mail transfer agents, MTA). Postfix listens here by default. Many ISPs block outbound port 25 on home connections',C_MAIL,false,'','Postfix, Sendmail, Exim, Microsoft Exchange'],
  [43,'TCP','WHOIS','Domain and IP registration lookups',C_DNS,false,''],
  [49,'TCP','TACACS+','Login, authorisation and accounting for network devices (TACACS+ runs over TCP)',C_AUTH,false,''],
- [53,'TCP/UDP','DNS','Name resolution. UDP for most queries, TCP for large answers and zone transfers',C_DNS,false,''],
- [67,'UDP','DHCP server','Automatic IP address assignment: the server listens here',C_DNS,false,''],
+ [53,'TCP/UDP','DNS','Name resolution. UDP for most queries, TCP for large answers and zone transfers',C_DNS,false,'','BIND (named), Unbound, dnsmasq, Microsoft DNS'],
+ [67,'UDP','DHCP server','Automatic IP address assignment: the server listens here',C_DNS,false,'','ISC DHCP (dhcpd), Kea, dnsmasq, Microsoft DHCP'],
  [68,'UDP','DHCP client','Automatic IP address assignment: the client listens here',C_DNS,false,''],
  [69,'UDP','TFTP','Simple file transfer for device firmware and network boot (PXE)',C_FILE,false,'No login or encryption. Keep it on trusted management networks only.'],
- [80,'TCP','HTTP','Unencrypted web traffic',C_WEB,false,''],
+ [80,'TCP','HTTP','Unencrypted web traffic',C_WEB,false,'','Apache httpd, nginx, Microsoft IIS'],
  [88,'TCP/UDP','Kerberos','Ticket-based login, used by Active Directory',C_AUTH,false,''],
- [110,'TCP','POP3','Download email from a mail server, unencrypted',C_MAIL,false,'Passwords are sent in clear text. Use POP3S (995).'],
+ [110,'TCP','POP3','Download email from a mail server, unencrypted',C_MAIL,false,'Passwords are sent in clear text. Use POP3S (995).','Dovecot, Courier, Cyrus IMAP'],
  [111,'TCP/UDP','rpcbind','RPC port mapper, used by NFS',C_FILE,false,'Do not expose it to the internet.'],
- [123,'UDP','NTP','Clock synchronisation (Network Time Protocol)',C_DNS,false,''],
+ [123,'UDP','NTP','Clock synchronisation (Network Time Protocol)',C_DNS,false,'','chrony, ntpd, systemd-timesyncd'],
  [135,'TCP','MS RPC','Windows RPC endpoint mapper',C_WIN,false,'Block it from the internet.'],
  [137,'UDP','NetBIOS name','NetBIOS name service (legacy Windows naming)',C_WIN,false,''],
  [138,'UDP','NetBIOS datagram','NetBIOS datagram service (legacy Windows browsing)',C_WIN,false,''],
  [139,'TCP','NetBIOS session','Legacy Windows file sharing (SMB over NetBIOS)',C_WIN,false,''],
- [143,'TCP','IMAP','Read email on the server, unencrypted unless upgraded with STARTTLS',C_MAIL,false,'Prefer IMAPS (993).'],
- [161,'UDP','SNMP','Monitoring and management queries to network devices',C_MON,false,'SNMP v1 and v2c send the community string in clear text. Use SNMPv3.'],
+ [143,'TCP','IMAP','Read email on the server, unencrypted unless upgraded with STARTTLS',C_MAIL,false,'Prefer IMAPS (993).','Dovecot, Courier, Cyrus IMAP'],
+ [161,'UDP','SNMP','Monitoring and management queries to network devices',C_MON,false,'SNMP v1 and v2c send the community string in clear text. Use SNMPv3.','Net-SNMP (snmpd)'],
  [162,'UDP','SNMP trap','Alerts that devices send to the monitoring server',C_MON,false,''],
  [179,'TCP','BGP','Internet and WAN routing between networks (Border Gateway Protocol)',C_NET,false,''],
- [389,'TCP/UDP','LDAP','Directory lookups (Active Directory, OpenLDAP), unencrypted unless StartTLS is used',C_AUTH,false,''],
- [443,'TCP/UDP','HTTPS','Encrypted web traffic (HTTP over TLS). UDP 443 carries QUIC / HTTP/3',C_WEB,false,''],
- [445,'TCP','SMB','Windows file and printer sharing (SMB, also Samba)',C_WIN,false,'Never expose it to the internet.'],
+ [389,'TCP/UDP','LDAP','Directory lookups (Active Directory, OpenLDAP), unencrypted unless StartTLS is used',C_AUTH,false,'','OpenLDAP (slapd), 389 Directory Server, Active Directory'],
+ [443,'TCP/UDP','HTTPS','Encrypted web traffic (HTTP over TLS). UDP 443 carries QUIC / HTTP/3',C_WEB,false,'','Apache httpd, nginx, Microsoft IIS'],
+ [445,'TCP','SMB','Windows file and printer sharing (SMB, also Samba)',C_WIN,false,'Never expose it to the internet.','Samba, Windows file sharing'],
  [464,'TCP/UDP','Kerberos password','Kerberos password change (kpasswd)',C_AUTH,false,''],
- [465,'TCP','SMTPS','Email submission over implicit TLS',C_MAIL,false,''],
+ [465,'TCP','SMTPS','Email submission over implicit TLS (Postfix names it smtps or submissions). Not enabled by default in Postfix: turn it on in master.cf',C_MAIL,false,'','Postfix, Sendmail, Exim, Microsoft Exchange'],
  [500,'UDP','IKE','IPsec key exchange (ISAKMP)',C_NET,false,''],
- [514,'UDP','Syslog','Log messages sent to a syslog server',C_MON,false,''],
+ [514,'UDP','Syslog','Log messages sent to a syslog server',C_MON,false,'','rsyslog, syslog-ng'],
  [514,'TCP','rsh','Remote shell (legacy). Some syslog-over-TCP setups also use 514 by convention',C_REM,false,'rsh is obsolete and unencrypted. Use SSH instead.'],
  [515,'TCP','LPD','Line Printer Daemon (legacy print spooling)',C_OTH,false,''],
  [520,'UDP','RIP','Routing Information Protocol',C_NET,false,''],
  [521,'UDP','RIPng','RIP for IPv6',C_NET,false,''],
  [546,'UDP','DHCPv6 client','Automatic IPv6 configuration: the client listens here',C_DNS,false,''],
  [547,'UDP','DHCPv6 server','Automatic IPv6 configuration: the server listens here',C_DNS,false,''],
- [587,'TCP','SMTP submission','Email sent from mail clients to the mail server (usually STARTTLS)',C_MAIL,false,''],
+ [587,'TCP','SMTP submission','Email sent from mail clients to the mail server (usually STARTTLS). In Postfix, turn on the submission service in master.cf',C_MAIL,false,'','Postfix, Sendmail, Exim, Microsoft Exchange'],
  [623,'UDP','IPMI','Out-of-band server management (RMCP), such as iLO and iDRAC',C_REM,false,'IPMI has known weaknesses. Keep management interfaces off the internet.'],
- [631,'TCP/UDP','IPP','Internet Printing Protocol (CUPS)',C_OTH,false,''],
- [636,'TCP','LDAPS','LDAP over TLS',C_AUTH,false,''],
+ [631,'TCP/UDP','IPP','Internet Printing Protocol (CUPS)',C_OTH,false,'','CUPS'],
+ [636,'TCP','LDAPS','LDAP over TLS',C_AUTH,false,'','OpenLDAP (slapd), 389 Directory Server, Active Directory'],
  [646,'TCP/UDP','LDP','MPLS Label Distribution Protocol',C_NET,false,''],
  [830,'TCP','NETCONF','Network device configuration over SSH',C_MON,false,''],
  [853,'TCP','DNS over TLS','Encrypted DNS queries (DoT)',C_DNS,false,''],
@@ -211,8 +218,8 @@ var DATA=[
  [902,'TCP/UDP','VMware ESXi','VMware host management and VM console (vSphere)',C_MON,true,''],
  [989,'TCP','FTPS (data)','FTP over implicit TLS, data channel',C_FILE,false,''],
  [990,'TCP','FTPS (control)','FTP over implicit TLS, control channel',C_FILE,false,''],
- [993,'TCP','IMAPS','IMAP over TLS',C_MAIL,false,''],
- [995,'TCP','POP3S','POP3 over TLS',C_MAIL,false,''],
+ [993,'TCP','IMAPS','IMAP over TLS',C_MAIL,false,'','Dovecot, Courier, Cyrus IMAP'],
+ [995,'TCP','POP3S','POP3 over TLS',C_MAIL,false,'','Dovecot, Courier, Cyrus IMAP'],
  [1080,'TCP','SOCKS','SOCKS proxy',C_WEB,false,''],
  [1194,'TCP/UDP','OpenVPN','OpenVPN tunnels (UDP is the usual choice)',C_NET,false,''],
  [1433,'TCP','SQL Server','Microsoft SQL Server (MSSQL) database',C_DB,false,''],
@@ -225,7 +232,7 @@ var DATA=[
  [1883,'TCP','MQTT','Lightweight IoT messaging',C_MSG,false,''],
  [1900,'UDP','SSDP','UPnP device discovery',C_OTH,false,'Disable UPnP on internet-facing devices.'],
  [1985,'UDP','HSRP','Cisco Hot Standby Router Protocol',C_NET,false,''],
- [2049,'TCP/UDP','NFS','Network File System',C_FILE,false,''],
+ [2049,'TCP/UDP','NFS','Network File System',C_FILE,false,'','Linux NFS server (nfsd)'],
  [2055,'UDP','NetFlow','NetFlow export to a collector (common default)',C_MON,true,''],
  [2375,'TCP','Docker API','Docker daemon API without encryption',C_DEV,false,'Gives full control of the host. Never expose it without TLS and authentication.'],
  [2376,'TCP','Docker API (TLS)','Docker daemon API over TLS',C_DEV,false,''],
@@ -236,8 +243,8 @@ var DATA=[
  [3260,'TCP','iSCSI','Block storage over IP',C_FILE,false,''],
  [3268,'TCP','Global Catalog','Active Directory Global Catalog (LDAP)',C_AUTH,false,''],
  [3269,'TCP','Global Catalog (TLS)','Active Directory Global Catalog over TLS',C_AUTH,false,''],
- [3306,'TCP','MySQL / MariaDB','MySQL and MariaDB databases',C_DB,false,''],
- [3389,'TCP/UDP','RDP','Windows Remote Desktop',C_REM,false,'Do not expose it directly to the internet. Use a VPN or gateway.'],
+ [3306,'TCP','MySQL / MariaDB','MySQL and MariaDB databases',C_DB,false,'','MySQL, MariaDB, Percona Server'],
+ [3389,'TCP/UDP','RDP','Windows Remote Desktop',C_REM,false,'Do not expose it directly to the internet. Use a VPN or gateway.','Windows Remote Desktop, xrdp'],
  [3478,'TCP/UDP','STUN / TURN','NAT traversal for voice and video calls',C_MSG,false,''],
  [3690,'TCP','Subversion','SVN repository access',C_DEV,false,''],
  [4500,'UDP','IPsec NAT-T','IPsec through NAT devices',C_NET,false,''],
@@ -252,14 +259,14 @@ var DATA=[
  [5601,'TCP','Kibana','Kibana web interface (default port)',C_MON,true,''],
  [5671,'TCP','AMQP over TLS','Message broker over TLS',C_MSG,false,''],
  [5672,'TCP','AMQP','Message broker (RabbitMQ)',C_MSG,false,''],
- [5900,'TCP','VNC','Remote desktop (VNC)',C_REM,false,'VNC is often unencrypted. Tunnel it through SSH or a VPN.'],
+ [5900,'TCP','VNC','Remote desktop (VNC)',C_REM,false,'VNC is often unencrypted. Tunnel it through SSH or a VPN.','TigerVNC, RealVNC, x11vnc'],
  [5985,'TCP','WinRM (HTTP)','Windows remote management and PowerShell remoting',C_REM,false,''],
  [5986,'TCP','WinRM (HTTPS)','Windows remote management over TLS',C_REM,false,''],
  [6343,'UDP','sFlow','sFlow traffic sampling',C_MON,false,''],
  [6379,'TCP','Redis','Redis in-memory database',C_DB,true,'Often run without a password. Never expose it to the internet.'],
  [6443,'TCP','Kubernetes API','Kubernetes (k8s) API server',C_DEV,true,''],
- [6514,'TCP','Syslog over TLS','Encrypted log delivery',C_MON,false,''],
- [8080,'TCP','HTTP alternate','Alternate web port used by proxies and app servers (Tomcat, Jenkins)',C_WEB,false,''],
+ [6514,'TCP','Syslog over TLS','Encrypted log delivery',C_MON,false,'','rsyslog, syslog-ng'],
+ [8080,'TCP','HTTP alternate','Alternate web port used by proxies and app servers (Tomcat, Jenkins)',C_WEB,false,'','Apache Tomcat, Jenkins'],
  [8200,'TCP','Vault','HashiCorp Vault API (default port)',C_DEV,true,''],
  [8443,'TCP','HTTPS alternate','Alternate HTTPS port used by management consoles',C_WEB,true,''],
  [8500,'TCP','Consul','HashiCorp Consul HTTP API (default port)',C_DEV,true,''],
@@ -270,6 +277,8 @@ var DATA=[
  [9200,'TCP','Elasticsearch','Elasticsearch HTTP API',C_DB,true,'Do not expose it to the internet without authentication.'],
  [9300,'TCP','Elasticsearch nodes','Elasticsearch node-to-node transport',C_DB,true,''],
  [9418,'TCP','Git','Git protocol',C_DEV,false,''],
+ [10024,'TCP','Amavis','Amavis spam and virus filter. Postfix hands mail to it here (content_filter), commonly with SpamAssassin and ClamAV',C_MAIL,true,'','Amavis'],
+ [10025,'TCP','Postfix re-injection','Second Postfix listener that takes scanned mail back from Amavis, so it is not filtered twice',C_MAIL,true,'Bind it to 127.0.0.1 only, so nobody else can submit mail through it.','Postfix'],
  [10050,'TCP','Zabbix agent','Zabbix monitoring agent',C_MON,false,''],
  [10051,'TCP','Zabbix server','Zabbix server (trapper)',C_MON,false,''],
  [10250,'TCP','Kubelet API','Kubernetes node agent (kubelet)',C_DEV,true,'Restrict access to the cluster network only.'],
@@ -277,7 +286,7 @@ var DATA=[
  [27017,'TCP','MongoDB','MongoDB database',C_DB,true,'Do not expose it to the internet without authentication.'],
  [51820,'UDP','WireGuard','WireGuard VPN (common default, configurable)',C_NET,true,'']
 ];
-var PORTS=DATA.map(function(r){return {port:r[0],proto:r[1],service:r[2],info:r[3],category:r[4],conv:r[5],note:r[6]};});
+var PORTS=DATA.map(function(r){return {port:r[0],proto:r[1],service:r[2],info:r[3],category:r[4],conv:r[5],note:r[6],soft:r[7]||''};});
 PORTS.sort(function(a,b){return a.port-b.port || a.proto.localeCompare(b.proto);});
 
 // ---------- elements and state ----------
@@ -329,11 +338,11 @@ function filterList(){
   var terms=q.split(/\s+/);
   var ranked=[];
   list.forEach(function(e){
-    var name=e.service.toLowerCase();
+    var name=(e.service+' '+e.soft).toLowerCase();
     var main=(name+' '+e.info+' '+e.category).toLowerCase();
     var all=(e.port+' '+e.proto+' '+main+' '+e.note+(e.conv?' common convention':'')).toLowerCase();
     if(!terms.every(function(t){return all.indexOf(t)!==-1;})) return;
-    // relevance: 0 = the service name matches, 1 = the description matches, 2 = only a caution note or other field matches
+    // relevance: 0 = the service or software name matches, 1 = the description matches, 2 = only a caution note or other field matches
     var rank=terms.every(function(t){return name.indexOf(t)!==-1;})?0:(terms.every(function(t){return main.indexOf(t)!==-1;})?1:2);
     ranked.push({e:e,rank:rank});
   });
@@ -354,6 +363,10 @@ function render(list){
     tr.appendChild(td(e.service,'svc'));
     var info=document.createElement('td');
     info.appendChild(document.createTextNode(e.info));
+    if(e.soft){
+      var sw=document.createElement('span'); sw.className='soft'; sw.textContent='Common software: '+e.soft;
+      info.appendChild(sw);
+    }
     if(e.conv){
       var tag=document.createElement('span'); tag.className='tag conv'; tag.textContent='Common convention';
       info.appendChild(tag);
