@@ -216,3 +216,20 @@ footer.site-footer .f-links{display:flex;gap:20px;}
 .home-about{margin-top:36px;line-height:1.65;font-size:15px;color:var(--text-soft);}
 .home-about h3{font-size:19px;color:var(--text);margin:0 0 8px 0;}
 .home-about a{color:var(--link);}
+
+/* ---------- Grouped tool sections on the home page ---------- */
+.jump-links{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 8px 0;}
+.jump-links a{
+  background:var(--soft-bg);border:1px solid var(--border);border-radius:999px;
+  padding:7px 14px;font-size:13px;font-weight:600;color:var(--text);
+}
+.jump-links a:hover{background:var(--border);}
+.tool-group{margin-top:36px;scroll-margin-top:16px;}
+.group-head{margin-bottom:14px;padding-left:12px;border-left:4px solid var(--blue);}
+.group-head h3{font-size:21px;margin:0 0 2px 0;}
+.group-head p{color:var(--muted);font-size:14px;margin:0;}
+
+/* ---------- Breadcrumb on tool pages ---------- */
+.crumbs{font-size:13px;margin-bottom:20px;color:var(--muted);}
+.crumbs a{color:var(--link);}
+.crumbs span{margin:0 6px;}

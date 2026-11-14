@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EJD Tech – Free Network Tools for System Administrators</title>
-<meta name="description" content="Free online network tools for sysadmins and network engineers: public IP finder, subnet calculator, DNS lookup, port number reference, QR code generator, password generator and time zone converter. No sign-up, nothing stored.">
+<meta name="description" content="Free online network tools for sysadmins and network engineers: public IP finder, subnet calculator, DNS lookup, port number reference, cron expression generator, QR code generator, password generator and time zone converter. No sign-up, nothing stored.">
 <link rel="canonical" href="https://ejdtech.in/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EJD Tech">
 <meta property="og:title" content="EJD Tech – Free Network Tools for System Administrators">
-<meta property="og:description" content="Free online network tools for sysadmins and network engineers: public IP finder, subnet calculator, DNS lookup, port number reference, QR code generator, password generator and time zone converter. No sign-up, nothing stored.">
+<meta property="og:description" content="Free online network tools for sysadmins and network engineers: public IP finder, subnet calculator, DNS lookup, port number reference, cron expression generator, QR code generator, password generator and time zone converter. No sign-up, nothing stored.">
 <meta property="og:url" content="https://ejdtech.in/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-weight='700' text-anchor='middle' fill='white' font-family='Arial'%3EEJ%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/style.css">
@@ -44,9 +44,13 @@
 </section>
 
 <main id="tools">
-  <div class="section-title"><h3>Available Tools</h3><p>Click on any tool below to get started.</p></div>
+  <div class="section-title"><h3>Available Tools</h3><p>Pick a group, then click any tool to get started.</p></div>
 
-  <div class="grid">
+  <nav class="jump-links" aria-label="Tool groups"><a href="#network">Network Tools</a><a href="#sysadmin">System Administration</a><a href="#security">Security Tools</a><a href="#developer">Developer Utilities</a></nav>
+
+  <section class="tool-group" id="network" aria-labelledby="network-h">
+    <div class="group-head"><h3 id="network-h">Network Tools</h3><p>IP addresses, subnets, DNS and ports.</p></div>
+    <div class="grid">
 
     <a class="card" href="tools/public-ip.html">
       <div class="card-icon" style="background:#dbeafe;color:#2563eb;">
@@ -64,35 +68,11 @@
       <div class="card-arrow">&rarr;</div>
     </a>
 
-    <a class="card" href="tools/password-generator.html">
-      <div class="card-icon" style="background:#fef3c7;color:#d97706;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
-      </div>
-      <div class="card-text"><h4>Password Generator</h4><p>Create strong random passwords. Generated in your browser, never stored.</p></div>
-      <div class="card-arrow">&rarr;</div>
-    </a>
-
-    <a class="card" href="tools/timezone-converter.html">
-      <div class="card-icon" style="background:#e0f2fe;color:#0284c7;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-      </div>
-      <div class="card-text"><h4>Time Zone Converter</h4><p>Convert time between IST, SGT, UTC, EST, PST and more.</p></div>
-      <div class="card-arrow">&rarr;</div>
-    </a>
-
     <a class="card" href="tools/dns-lookup.html">
       <div class="card-icon" style="background:#ede9fe;color:#7c3aed;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
       </div>
       <div class="card-text"><h4>DNS Lookup</h4><p>Check A, MX, TXT, NS and CNAME records for any domain.</p></div>
-      <div class="card-arrow">&rarr;</div>
-    </a>
-
-    <a class="card" href="tools/qr-code-generator.html">
-      <div class="card-icon" style="background:#ccfbf1;color:#0d9488;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h1"/></svg>
-      </div>
-      <div class="card-text"><h4>QR Code Generator</h4><p>Make QR codes for links, Wi-Fi, email and contacts. Download PNG or SVG.</p></div>
       <div class="card-arrow">&rarr;</div>
     </a>
 
@@ -103,22 +83,6 @@
       <div class="card-text"><h4>Port Number Reference</h4><p>Search common TCP and UDP ports: SSH 22, HTTPS 443, RDP 3389 and more.</p></div>
       <div class="card-arrow">&rarr;</div>
     </a>
-
-    <div class="card disabled" title="Coming soon">
-      <div class="card-icon" style="background:#dcfce7;color:#16a34a;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 8 4-16 2 8h6"/></svg>
-      </div>
-      <div class="card-text"><h4>HTTP Latency Check</h4><p>Check if a host is reachable and measure response time.</p></div>
-      <div class="badge-soon">Coming soon</div>
-    </div>
-
-    <div class="card disabled" title="Coming soon">
-      <div class="card-icon" style="background:#dbeafe;color:#2563eb;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6 8v4a4 4 0 0 0 4 4M18 8v4a4 4 0 0 1-4 4"/></svg>
-      </div>
-      <div class="card-text"><h4>Traceroute</h4><p>See the path your packets take to a destination.</p></div>
-      <div class="badge-soon">Coming soon</div>
-    </div>
 
     <div class="card disabled" title="Coming soon">
       <div class="card-icon" style="background:#d1fae5;color:#059669;">
@@ -137,10 +101,10 @@
     </div>
 
     <div class="card disabled" title="Coming soon">
-      <div class="card-icon" style="background:#dbeafe;color:#2563eb;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8.5a16 16 0 0 1 20 0"/><path d="M5.5 12a11 11 0 0 1 13 0"/><path d="M9 15.5a6 6 0 0 1 6 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
+      <div class="card-icon" style="background:#dcfce7;color:#16a34a;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 8 4-16 2 8h6"/></svg>
       </div>
-      <div class="card-text"><h4>Wi-Fi Analyzer</h4><p>Check your wireless network information and signal strength.</p></div>
+      <div class="card-text"><h4>HTTP Latency Check</h4><p>Check if a host is reachable and measure response time.</p></div>
       <div class="badge-soon">Coming soon</div>
     </div>
 
@@ -153,6 +117,92 @@
     </div>
 
     <div class="card disabled" title="Coming soon">
+      <div class="card-icon" style="background:#dbeafe;color:#2563eb;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6 8v4a4 4 0 0 0 4 4M18 8v4a4 4 0 0 1-4 4"/></svg>
+      </div>
+      <div class="card-text"><h4>Traceroute</h4><p>See the path your packets take to a destination.</p></div>
+      <div class="badge-soon">Coming soon</div>
+    </div>
+
+    <div class="card disabled" title="Coming soon">
+      <div class="card-icon" style="background:#dbeafe;color:#2563eb;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8.5a16 16 0 0 1 20 0"/><path d="M5.5 12a11 11 0 0 1 13 0"/><path d="M9 15.5a6 6 0 0 1 6 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
+      </div>
+      <div class="card-text"><h4>Wi-Fi Analyzer</h4><p>Check your wireless network information and signal strength.</p></div>
+      <div class="badge-soon">Coming soon</div>
+    </div>
+
+    </div>
+  </section>
+
+  <section class="tool-group" id="sysadmin" aria-labelledby="sysadmin-h">
+    <div class="group-head"><h3 id="sysadmin-h">System Administration</h3><p>Scheduling, time and everyday server tasks.</p></div>
+    <div class="grid">
+
+    <a class="card" href="tools/timezone-converter.html">
+      <div class="card-icon" style="background:#e0f2fe;color:#0284c7;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </div>
+      <div class="card-text"><h4>Time Zone Converter</h4><p>Convert time between IST, SGT, UTC, EST, PST and more.</p></div>
+      <div class="card-arrow">&rarr;</div>
+    </a>
+
+    <a class="card" href="tools/cron-expression-generator.html">
+      <div class="card-icon" style="background:#dcfce7;color:#16a34a;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15l2.5 2.5L16 13"/></svg>
+      </div>
+      <div class="card-text"><h4>Cron Expression Generator</h4><p>Build crontab schedules, read them in plain English and see the next run times.</p></div>
+      <div class="card-arrow">&rarr;</div>
+    </a>
+
+    <div class="card disabled" title="Coming soon">
+      <div class="card-icon" style="background:#fee2e2;color:#dc2626;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+      </div>
+      <div class="card-text"><h4>chmod / umask Calculator</h4><p>Work out Linux file permissions such as 755 or 644.</p></div>
+      <div class="badge-soon">Coming soon</div>
+    </div>
+
+    <div class="card disabled" title="Coming soon">
+      <div class="card-icon" style="background:#e0f2fe;color:#0284c7;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      </div>
+      <div class="card-text"><h4>Epoch Converter</h4><p>Convert Unix timestamps to dates and back.</p></div>
+      <div class="badge-soon">Coming soon</div>
+    </div>
+
+    </div>
+  </section>
+
+  <section class="tool-group" id="security" aria-labelledby="security-h">
+    <div class="group-head"><h3 id="security-h">Security Tools</h3><p>Passwords, email protection and certificates.</p></div>
+    <div class="grid">
+
+    <a class="card" href="tools/password-generator.html">
+      <div class="card-icon" style="background:#fef3c7;color:#d97706;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
+      </div>
+      <div class="card-text"><h4>Password Generator</h4><p>Create strong random passwords. Generated in your browser, never stored.</p></div>
+      <div class="card-arrow">&rarr;</div>
+    </a>
+
+    <div class="card disabled" title="Coming soon">
+      <div class="card-icon" style="background:#fef3c7;color:#d97706;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+      </div>
+      <div class="card-text"><h4>Email Security Checker</h4><p>Check SPF, DMARC, DKIM and MX records for a domain.</p></div>
+      <div class="badge-soon">Coming soon</div>
+    </div>
+
+    <div class="card disabled" title="Coming soon">
+      <div class="card-icon" style="background:#ede9fe;color:#7c3aed;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9h14M5 15h14M10 4L8 20M16 4l-2 16"/></svg>
+      </div>
+      <div class="card-text"><h4>Hash Generator</h4><p>Create SHA-256, SHA-512 and other hashes of text.</p></div>
+      <div class="badge-soon">Coming soon</div>
+    </div>
+
+    <div class="card disabled" title="Coming soon">
       <div class="card-icon" style="background:#f1f5f9;color:#475569;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-4.5"/></svg>
       </div>
@@ -160,7 +210,39 @@
       <div class="badge-soon">Coming soon</div>
     </div>
 
-  </div>
+    </div>
+  </section>
+
+  <section class="tool-group" id="developer" aria-labelledby="developer-h">
+    <div class="group-head"><h3 id="developer-h">Developer Utilities</h3><p>Quick generators and converters.</p></div>
+    <div class="grid">
+
+    <a class="card" href="tools/qr-code-generator.html">
+      <div class="card-icon" style="background:#ccfbf1;color:#0d9488;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h1"/></svg>
+      </div>
+      <div class="card-text"><h4>QR Code Generator</h4><p>Make QR codes for links, Wi-Fi, email and contacts. Download PNG or SVG.</p></div>
+      <div class="card-arrow">&rarr;</div>
+    </a>
+
+    <div class="card disabled" title="Coming soon">
+      <div class="card-icon" style="background:#dbeafe;color:#2563eb;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13 6l-2 12"/></svg>
+      </div>
+      <div class="card-text"><h4>Base64 Encode / Decode</h4><p>Convert text to and from Base64.</p></div>
+      <div class="badge-soon">Coming soon</div>
+    </div>
+
+    <div class="card disabled" title="Coming soon">
+      <div class="card-icon" style="background:#ccfbf1;color:#0d9488;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4c-2 0-3 1-3 3v2c0 1-1 2-2 3 1 1 2 2 2 3v2c0 2 1 3 3 3M15 4c2 0 3 1 3 3v2c0 1 1 2 2 3-1 1-2 2-2 3v2c0 2-1 3-3 3"/></svg>
+      </div>
+      <div class="card-text"><h4>JSON Validator</h4><p>Check and tidy up JSON.</p></div>
+      <div class="badge-soon">Coming soon</div>
+    </div>
+
+    </div>
+  </section>
 
   <div class="tip-box">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="8"/></svg>
@@ -169,7 +251,7 @@
 
   <section class="home-about">
     <h3>Free network tools for system administrators</h3>
-    <p>EJD Tech Network Tools is a free collection of browser-based utilities for system administrators and network engineers. Find your public IP address, calculate IPv4 subnets and CIDR ranges, look up DNS records, search common port numbers, generate strong random passwords, create QR codes and convert time between zones such as IST, UTC, EST and PST.</p>
+    <p>EJD Tech Network Tools is a free collection of browser-based utilities for system administrators and network engineers. Find your public IP address, calculate IPv4 subnets and CIDR ranges, look up DNS records, search common port numbers, build cron schedules, generate strong random passwords, create QR codes and convert time between zones such as IST, UTC, EST and PST.</p>
     <p>There is nothing to install and no sign-up. The tools run in your browser, and this site does not store the information you enter. More tools are being added one by one. Looking for something lighter? Try <a href="fun.html">Office Fun</a> for a spin-the-wheel and a random team splitter.</p>
   </section>
 </main>
