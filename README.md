@@ -1,4 +1,4 @@
-# EJD Tech: Network Tools
+# EJD Tech: Admin Toolkit
 
 Free, browser-based tools for system administrators and network engineers, plus a small "Office Fun" section.
 Plain HTML, CSS and JavaScript. No build step, no server and no database. Hosted on GitHub Pages at https://ejdtech.in
